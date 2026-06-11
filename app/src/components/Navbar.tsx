@@ -11,7 +11,7 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount, username, onLogout }) => {
   return (
     <nav className="bg-blue-600 p-4 text-white flex justify-between items-center shadow-lg" data-test="navbar">
       <div className="flex items-center space-x-6">
-        <Link to="/" className="text-xl font-bold" data-test="nav-logo">Fake Store</Link>
+        <Link to="/" className="text-xl font-bold mr-4" data-test="nav-logo">Fake Store</Link>
         <Link to="/" className="hover:text-blue-200 transition-colors" data-test="nav-home">Home</Link>
       </div>
       

@@ -10,18 +10,26 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart }) => {
   return (
     <div className="border p-4 rounded-lg shadow hover:shadow-xl transition-all bg-white flex flex-col h-full group" data-test={`product-card-${product.id}`}>
-      <div className="overflow-hidden mb-4 rounded">
+      <div className="overflow-hidden mb-4 rounded bg-gray-50 flex items-center justify-center">
         <img 
           src={product.image} 
           alt={product.title} 
-          className="h-48 w-full object-contain group-hover:scale-105 transition-transform duration-300" 
-          data-test="product-image" 
+          className="h-48 w-full object-contain group-hover:scale-105 transition-transform duration-300 mix-blend-multiply" 
+          data-test="product-image"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = 'https://placehold.co/400x400?text=Image+Not+Found';
+          }}
         />
       </div>
-      <h2 className="text-lg font-semibold truncate mb-2" title={product.title} data-test="product-title">{product.title}</h2>
+      <h2 className="text-lg font-semibold truncate mb-2 text-gray-900" title={product.title} data-test="product-title">{product.title}</h2>
       <div className="flex justify-between items-center mb-4">
         <p className="text-xl font-bold text-blue-600" data-test="product-price">${product.price}</p>
-        <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded capitalize">{product.category}</span>
+        <span 
+          className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded capitalize font-medium" 
+          data-test="product-category"
+        >
+          {product.category}
+        </span>
       </div>
       <div className="mt-auto flex space-x-2">
         <Link 

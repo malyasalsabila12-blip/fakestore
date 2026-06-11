@@ -53,12 +53,16 @@ test.describe('Fake Store E2E Automation (POM)', () => {
       await expect(homePage.emptyState).toContainText('No products found');
     });
 
-    test('Filter by category', async () => {
+    test('Filter by category', async ({ page }) => {
       await homePage.filterByCategory('electronics');
-      await expect(homePage.productCards.first()).toContainText('SanDisk', { ignoreCase: true });
-      // Verify all items are in category (this is a more thorough check)
-      const categories = await homePage.page.locator('[data-test="product-category"]').allTextContents();
-      // Note: my component doesn't have data-test="product-category" yet, let's fix that later or use existing logic
+      await expect(homePage.productCards.first()).toBeVisible({ timeout: 15000 });
+      
+      // Verify that all displayed items belong to the selected category
+      const categories = await page.locator('[data-test="product-category"]').allTextContents();
+      expect(categories.length).toBeGreaterThan(0);
+      for (const cat of categories) {
+        expect(cat.toLowerCase()).toBe('electronics');
+      }
     });
   });
 
