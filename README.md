@@ -39,7 +39,7 @@ The web application consumes the [FakeStoreAPI](https://fakestoreapi.com/) and i
     ```bash
     npm run dev
     ```
-4.  Open [http://localhost:5173](http://localhost:5173) in your browser.
+4.  Open [http://localhost:5173]in your browser.
 
 ### Architecture Diagram
 

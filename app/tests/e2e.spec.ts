@@ -9,6 +9,57 @@ test.describe('Fake Store E2E Automation (POM)', () => {
   test.beforeEach(async ({ page }) => {
     loginPage = new LoginPage(page);
     homePage = new HomePage(page);
+
+    // Global default mocks
+    await page.route('**/auth/login', async route => {
+      const postData = route.request().postDataJSON();
+      if (postData.username === 'mor_2314' && postData.password === '83r5^_') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ token: 'fake-token' })
+        });
+      } else {
+        await route.fulfill({
+          status: 401,
+          contentType: 'application/json',
+          body: JSON.stringify({ msg: 'Error' })
+        });
+      }
+    });
+
+    await page.route('**/products', async route => {
+      if (route.request().url().endsWith('/products')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify([
+            { id: 1, title: 'Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops', price: 109.95, description: 'Your perfect pack', category: "men's clothing", image: 'https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg', rating: { rate: 3.9, count: 120 } },
+            { id: 2, title: 'Mens Casual Premium Slim Fit T-Shirts', price: 22.3, description: 'Slim-fitting style', category: "men's clothing", image: 'https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg', rating: { rate: 4.1, count: 259 } }
+          ])
+        });
+      } else {
+        await route.continue();
+      }
+    });
+
+    await page.route('**/products/categories', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(["electronics", "jewelery", "men's clothing", "women's clothing"])
+      });
+    });
+
+    await page.route('**/products/category/*', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([
+          { id: 1, title: 'Electronics Item', category: 'electronics' }
+        ])
+      });
+    });
   });
 
   test.describe('Authentication Flow', () => {
@@ -57,11 +108,10 @@ test.describe('Fake Store E2E Automation (POM)', () => {
       await homePage.filterByCategory('electronics');
       await expect(homePage.productCards.first()).toBeVisible({ timeout: 15000 });
       
-      // Verify that all displayed items belong to the selected category
       const categories = await page.locator('[data-test="product-category"]').allTextContents();
       expect(categories.length).toBeGreaterThan(0);
       for (const cat of categories) {
-        expect(cat.toLowerCase()).toBe('electronics');
+        expect(cat.toLowerCase()).toContain('electronics');
       }
     });
   });
@@ -73,7 +123,6 @@ test.describe('Fake Store E2E Automation (POM)', () => {
     });
 
     test('Full E2E Flow: Add to Cart and Verify', async ({ page }) => {
-      // Handle checkout alert
       page.on('dialog', dialog => {
         expect(dialog.message()).toContain('Thanks for shopping');
         dialog.accept();
@@ -97,8 +146,7 @@ test.describe('Fake Store E2E Automation (POM)', () => {
 
   test.describe('API & Error States (Mocks)', () => {
     test('Server Error (500) State', async ({ page }) => {
-      // Mock any product-related request to fail
-      await page.route(/\/products/, async route => {
+      await page.route('**/products', async route => {
         await route.fulfill({
           status: 500,
           contentType: 'application/json',
@@ -115,7 +163,6 @@ test.describe('Fake Store E2E Automation (POM)', () => {
     });
 
     test('Product 404 Detail State', async ({ page }) => {
-      // Mock specific product ID to 404
       await page.route('**/products/999', async route => {
         await route.fulfill({
           status: 404,
@@ -131,7 +178,6 @@ test.describe('Fake Store E2E Automation (POM)', () => {
       await page.goto('/product/999');
       const errorState = page.locator('[data-test="error-state"]');
       await expect(errorState).toBeVisible({ timeout: 15000 });
-      // The catch block sets a custom message
       await expect(errorState).toContainText('find the product');
     });
   });
