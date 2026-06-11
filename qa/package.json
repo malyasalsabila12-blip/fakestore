@@ -1,0 +1,19 @@
+{
+  "name": "qa",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "newman run collections/FakeStoreAPI.postman_collection.json -e environments/Production.postman_environment.json -r cli,htmlextra --reporter-htmlextra-export reports/report.html && npm run report",
+    "report": "node generate-pdf.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "newman": "^6.2.2",
+    "newman-reporter-htmlextra": "^1.23.1",
+    "pdfkit": "^0.19.1"
+  }
+}
