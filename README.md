@@ -114,16 +114,6 @@ We use Newman (Postman CLI) for automated API testing.
 
 ---
 
-## 📂 Project Structure
-
-- `app/src/App.tsx`: Main application component containing routing and logic.
-- `app/tests/e2e.spec.ts`: Playwright E2E test suite using POM.
-- `qa/collections/`: Postman API collections for automated testing.
-- `app/playwright.config.ts`: Configuration for Playwright testing.
-- `app/vite.config.js`: Configuration for the Vite build tool.
-
----
-
 ## 🏗️ Architecture Diagram
 
 ```mermaid
@@ -135,3 +125,13 @@ graph TD
     GitHubActions[GitHub Actions] -->|CI/CD| Playwright
     GitHubActions -->|CI/CD| Newman
 ```
+
+---
+
+## 📂 Project Structure
+
+- `app/src/App.tsx`: Main application component containing routing and logic.
+- `app/tests/e2e.spec.ts`: Playwright E2E test suite using POM.
+- `qa/collections/`: Postman API collections for automated testing.
+- `app/playwright.config.ts`: Configuration for Playwright testing.
+- `app/vite.config.js`: Configuration for the Vite build tool.
