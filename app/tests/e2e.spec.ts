@@ -67,12 +67,18 @@ test.describe('Fake Store E2E Automation (POM)', () => {
   });
 
   test.describe('Cart & Checkout Flow', () => {
-    test.beforeEach(async () => {
+    test.beforeEach(async ({ page }) => {
       await loginPage.goto();
       await loginPage.login('mor_2314', '83r5^_');
     });
 
     test('Full E2E Flow: Add to Cart and Verify', async ({ page }) => {
+      // Handle checkout alert
+      page.on('dialog', dialog => {
+        expect(dialog.message()).toContain('Thanks for shopping');
+        dialog.accept();
+      });
+
       await homePage.addToCart(0);
       await homePage.addToCart(1);
       
@@ -86,33 +92,47 @@ test.describe('Fake Store E2E Automation (POM)', () => {
       await expect(total).toContainText('$');
       
       await page.locator('[data-test="checkout-btn"]').click();
-      // Handle alert
-      page.on('dialog', dialog => dialog.accept());
     });
   });
 
   test.describe('API & Error States (Mocks)', () => {
     test('Server Error (500) State', async ({ page }) => {
-      await page.route('**/products', route => route.fulfill({
-        status: 500,
-        body: JSON.stringify({ error: 'Internal Server Error' })
-      }));
+      // Mock any product-related request to fail
+      await page.route(/\/products/, async route => {
+        await route.fulfill({
+          status: 500,
+          contentType: 'application/json',
+          body: JSON.stringify({ error: 'Internal Server Error' })
+        });
+      });
       
       await loginPage.goto();
       await loginPage.login('mor_2314', '83r5^_');
-      await expect(page.locator('[data-test="error-state"]')).toBeVisible();
+      
+      const errorState = page.locator('[data-test="error-state"]');
+      await expect(errorState).toBeVisible({ timeout: 15000 });
+      await expect(errorState).toContainText('Failed to fetch');
     });
 
     test('Product 404 Detail State', async ({ page }) => {
-      await page.route('**/products/999', route => route.fulfill({
-        status: 404,
-        body: JSON.stringify({ error: 'Not Found' })
-      }));
+      // Mock specific product ID to 404
+      await page.route('**/products/999', async route => {
+        await route.fulfill({
+          status: 404,
+          contentType: 'application/json',
+          body: JSON.stringify({ error: 'Not Found' })
+        });
+      });
       
       await loginPage.goto();
       await loginPage.login('mor_2314', '83r5^_');
+      await expect(page).toHaveURL('/');
+      
       await page.goto('/product/999');
-      await expect(page.locator('[data-test="error-state"]')).toBeVisible();
+      const errorState = page.locator('[data-test="error-state"]');
+      await expect(errorState).toBeVisible({ timeout: 15000 });
+      // The catch block sets a custom message
+      await expect(errorState).toContainText('find the product');
     });
   });
 });
