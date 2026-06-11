@@ -41,21 +41,18 @@ The web application consumes the [FakeStoreAPI](https://fakestoreapi.com/) and i
     ```
 4.  Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-### Automation Features
+### Architecture Diagram
 
-The app includes `data-test` attributes on key elements to facilitate stable web automation:
-- `data-test="login-container"`
-- `data-test="username-input"`
-- `data-test="password-input"`
-- `data-test="login-submit"`
-- `data-test="navbar"`
-- `data-test="product-card-{id}"`
-- `data-test="add-to-cart-btn"`
-- `data-test="nav-cart"`
-- `data-test="loading"`
-- `data-test="error-state"`
-- and more...
+```mermaid
+graph TD
+    User[User/QA Engineer] -->|Interacts| WebApp[React Web App]
+    WebApp -->|HTTP Requests| API[Fake Store API]
+    Automation[Playwright / Newman] -->|Tests| WebApp
+    Automation -->|Tests| API
+    GitHubActions[GitHub Actions CI/CD] -->|Triggers| Automation
+    Automation -->|Generates| Reports[HTML Reports/Artifacts]
+```
 
-## API Automation (`qa/`)
+## Getting Started
 
 Detailed instructions can be found in the [QA README](qa/README.md).
