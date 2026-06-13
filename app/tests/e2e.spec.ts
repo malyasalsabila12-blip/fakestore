@@ -124,7 +124,7 @@ test.describe('Fake Store E2E Automation (POM)', () => {
 
     test('Full E2E Flow: Add to Cart and Verify', async ({ page }) => {
       page.on('dialog', dialog => {
-        expect(dialog.message()).toContain('Thanks for shopping');
+        expect(dialog.message()).toContain('Order placed successfully');
         dialog.accept();
       });
 
