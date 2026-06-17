@@ -1,0 +1,11 @@
+node_modules/
+.DS_Store
+*.log
+.env
+.env.*
+.vscode/
+dist/
+build/
+app/playwright-report/
+app/test-results/
+qa/reports/

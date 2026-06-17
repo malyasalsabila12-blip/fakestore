@@ -64,7 +64,7 @@ The app will be available at `http://localhost:5173` (or the port specified in t
 ---
 
 ## 🧪 Testing with Playwright
-
+g
 We use Playwright for end-to-end testing to ensure the application works as expected.
 
 ### Running Tests
