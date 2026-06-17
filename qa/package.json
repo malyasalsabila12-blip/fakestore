@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "newman run collections/FakeStoreAPI.postman_collection.json -e environments/FakeStore-Dev.postman_environment.json -r cli,htmlextra,json --reporter-json-export reports/report.json --reporter-htmlextra-export reports/report.html --reporter-htmlextra-title \"Fake Store API Test Report\" && node -e \"const fs = require('fs'); const date = new Date().toISOString().replace(/[:.]/g, '-'); if (fs.existsSync('reports/report.html')) fs.copyFileSync('reports/report.html', 'reports/report-' + date + '.html')\" && npm run report",
+    "test": "newman run collections/FakeStoreAPI.postman_collection.json -e environments/FakeStore-Dev.postman_environment.json -r cli,htmlextra,json --reporter-json-export reports/report.json --reporter-htmlextra-export reports/report.html --reporter-htmlextra-title \"Fake Store API Test Report\"; node -e \"const fs = require('fs'); const date = new Date().toISOString().replace(/[:.]/g, '-'); if (fs.existsSync('reports/report.html')) fs.copyFileSync('reports/report.html', 'reports/report-' + date + '.html')\"; npm run report",
     "report": "node generate-pdf.js"
   },
   "keywords": [],
