@@ -1,40 +1,42 @@
-name: Playwright Tests
+name: Playwright E2E Tests
+
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
 
-      # 1. Install (Project dependencies and browsers)
-      - name: Install dependencies
-        run: |
-          cd app
-          npm install
-          npx playwright install --with-deps
+    - name: Install
+      run: |
+        cd app
+        npm install
+        npx playwright install --with-deps
 
-      # 2. Run Test
-      - name: Run Playwright tests
-        run: |
-          cd app
-          npx playwright test
+    - name: Run Test
+      run: |
+        cd app
+        npm test
 
-      # 3. Generate Report (Playwright generates this automatically during the run step)
-      
-      # 4. Upload Artifact
-      - name: Upload Playwright report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report
-          path: app/playwright-report/
-          retention-days: 30
+    - name: Generate Report
+      if: always()
+      run: |
+        echo "Playwright automatically generates the report in app/playwright-report/"
+
+    - name: Upload Artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report
+        path: app/playwright-report/
+        retention-days: 30
