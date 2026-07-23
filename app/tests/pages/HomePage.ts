@@ -1,4 +1,4 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator, expect } from '@playwright/test';
 
 export class HomePage {
   readonly page: Page;
@@ -36,10 +36,12 @@ export class HomePage {
   }
 
   async addToCart(index: number = 0) {
-    await this.page.locator('[data-test="add-to-cart-btn"]').nth(index).click();
+    const btn = this.page.locator('[data-test="increment-product-btn"]').nth(index);
+    await expect(btn).toBeVisible({ timeout: 15000 });
+    await btn.click();
   }
 
   async openProductDetails(index: number = 0) {
-    await this.page.locator('[data-test="view-details-btn"]').nth(index).click();
+    await this.page.locator('[data-test="product-link"]').nth(index).click();
   }
 }

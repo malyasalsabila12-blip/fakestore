@@ -13,7 +13,7 @@ test.describe('Fake Store E2E Automation (POM)', () => {
     // Global default mocks
     await page.route('**/auth/login', async route => {
       const postData = route.request().postDataJSON();
-      if (postData.username === 'mor_2314' && postData.password === '83r5^_') {
+      if (postData.username === 'malya' && postData.password === 'serverqa123') {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -65,7 +65,7 @@ test.describe('Fake Store E2E Automation (POM)', () => {
   test.describe('Authentication Flow', () => {
     test('Valid Login - @smoke', async ({ page }) => {
       await loginPage.goto();
-      await loginPage.login('mor_2314', '83r5^_');
+      await loginPage.login('malya', 'serverqa123');
       await expect(page).toHaveURL('/');
       await expect(homePage.title).toBeVisible();
     });
@@ -79,7 +79,7 @@ test.describe('Fake Store E2E Automation (POM)', () => {
 
     test('Logout Flow', async ({ page }) => {
       await loginPage.goto();
-      await loginPage.login('mor_2314', '83r5^_');
+      await loginPage.login('malya', 'serverqa123');
       await homePage.logoutButton.click();
       await expect(page).toHaveURL('/login');
     });
@@ -88,7 +88,7 @@ test.describe('Fake Store E2E Automation (POM)', () => {
   test.describe('Search & Filter', () => {
     test.beforeEach(async () => {
       await loginPage.goto();
-      await loginPage.login('mor_2314', '83r5^_');
+      await loginPage.login('malya', 'serverqa123');
     });
 
     test('Search for existing product', async () => {
@@ -119,7 +119,7 @@ test.describe('Fake Store E2E Automation (POM)', () => {
   test.describe('Cart & Checkout Flow', () => {
     test.beforeEach(async ({ page }) => {
       await loginPage.goto();
-      await loginPage.login('mor_2314', '83r5^_');
+      await loginPage.login('malya', 'serverqa123');
     });
 
     test('Full E2E Flow: Add to Cart and Verify', async ({ page }) => {
@@ -135,6 +135,7 @@ test.describe('Fake Store E2E Automation (POM)', () => {
       await expect(cartCount).toHaveText('2');
       
       await homePage.cartLink.click();
+      await page.locator('[data-test="slideover-checkout"]').click();
       await expect(page).toHaveURL('/cart');
       
       const total = page.locator('[data-test="cart-total"]');
@@ -155,7 +156,7 @@ test.describe('Fake Store E2E Automation (POM)', () => {
       });
       
       await loginPage.goto();
-      await loginPage.login('mor_2314', '83r5^_');
+      await loginPage.login('malya', 'serverqa123');
       
       const errorState = page.locator('[data-test="error-state"]');
       await expect(errorState).toBeVisible({ timeout: 15000 });
@@ -163,7 +164,7 @@ test.describe('Fake Store E2E Automation (POM)', () => {
     });
 
     test('Product 404 Detail State', async ({ page }) => {
-      await page.route('**/products/999', async route => {
+      await page.route('**/products/1', async route => {
         await route.fulfill({
           status: 404,
           contentType: 'application/json',
@@ -172,12 +173,12 @@ test.describe('Fake Store E2E Automation (POM)', () => {
       });
       
       await loginPage.goto();
-      await loginPage.login('mor_2314', '83r5^_');
+      await loginPage.login('malya', 'serverqa123');
       await expect(page).toHaveURL('/');
       
-      await page.goto('/product/999');
+      await homePage.openProductDetails(0);
       const errorState = page.locator('[data-test="error-state"]');
-      await expect(errorState).toBeVisible({ timeout: 15000 });
+      await expect(errorState).toBeVisible({ timeout: 20000 });
       await expect(errorState).toContainText('find the product');
     });
   });

@@ -19,11 +19,64 @@
 @layer base {
   body {
     @apply transition-colors duration-500;
+    color: #0f172a;
+    background-color: #fffdfa;
+  }
+
+  button {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  html:not(.dark) button {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+    box-shadow: none !important;
+  }
+
+  html:not(.dark) button:hover {
+    background-color: #e2e8f0 !important;
+  }
+
+  html:not(.dark) input,
+  html:not(.dark) textarea,
+  html:not(.dark) select {
+    color: #0f172a !important;
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
   }
 }
 
 .glass {
   @apply bg-white/70 dark:bg-rose-950/40 backdrop-blur-2xl border border-pink-100 dark:border-pink-500/10 shadow-xl dark:shadow-pink-900/5;
+}
+
+/* Stronger pill / rounded button contrast in light mode */
+@layer components {
+  html:not(.dark) .rounded-full,
+  html:not(.dark) button.rounded-full,
+  html:not(.dark) .rounded-full[class*="px-"],
+  html:not(.dark) .rounded-full[class*="py-"] {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    border: 1px solid #e6eef6 !important;
+    box-shadow: 0 1px 2px rgba(2,6,23,0.06) !important;
+  }
+
+  /* smaller icon buttons get slightly darker icons for visibility */
+  html:not(.dark) .rounded-full .material-icons,
+  html:not(.dark) .rounded-full span.material-icons {
+    color: #0f172a !important;
+  }
+
+  /* Category/pill buttons */
+  html:not(.dark) .rounded-full.pill,
+  html:not(.dark) .rounded-full[data-test*="category"],
+  html:not(.dark) button[data-test*="category"] {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #e6eef6 !important;
+  }
 }
 
 .text-gradient {
@@ -61,4 +114,27 @@
   20%, 80% { transform: translate3d(2px, 0, 0); }
   30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
   40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Small UI pop animations for favorite toggle and quantity badge */
+.ui-pop {
+  transition: transform 180ms cubic-bezier(.2,.9,.3,1);
+}
+.ui-pop.pop {
+  transform: scale(1.12);
+}
+
+.heart-pop {
+  transition: transform 200ms cubic-bezier(.2,.9,.3,1), color 180ms ease;
+}
+.heart-pop.pop {
+  transform: scale(1.18);
+}
+
+/* Minor pulse for badges */
+.badge-anim {
+  transition: transform 140ms cubic-bezier(.2,.9,.3,1);
+}
+.badge-anim.pop {
+  transform: scale(1.08);
 }

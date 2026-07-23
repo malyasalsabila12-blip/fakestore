@@ -1,19 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import ProductCard from '../components/ProductCard';
-import VisualSearch from '../components/VisualSearch';
 import MysteryBox from '../components/MysteryBox';
 import { Product } from '../types';
 
 interface HomeProps {
   addToCart: (product: Product) => void;
+  removeOneFromCart: (product: Product) => void;
+  cart: Product[];
+  favorites: number[];
+  toggleFavorite: (product: Product) => void;
   isDarkMode: boolean;
 }
 
-const Home: React.FC<HomeProps> = ({ addToCart, isDarkMode }) => {
+const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorites, toggleFavorite, isDarkMode }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [visualSearchResults, setVisualSearchResults] = useState<Product[] | null>(null);
   const [isListening, setIsListening] = useState(false);
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,9 +25,7 @@ const Home: React.FC<HomeProps> = ({ addToCart, isDarkMode }) => {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchQuery(searchQuery);
-    }, 300);
+    const timer = setTimeout(() => setDebouncedSearchQuery(searchQuery), 300);
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
@@ -51,10 +51,11 @@ const Home: React.FC<HomeProps> = ({ addToCart, isDarkMode }) => {
           : `https://fakestoreapi.com/products/category/${encodeURIComponent(selectedCategory)}`;
         const res = await axios.get(url);
         setProducts(res.data);
-        setLoading(false);
+        setFilteredProducts(res.data);
       } catch (err) {
         console.error(err);
         setError('Failed to fetch products. Please try again later.');
+      } finally {
         setLoading(false);
       }
     };
@@ -63,23 +64,26 @@ const Home: React.FC<HomeProps> = ({ addToCart, isDarkMode }) => {
 
   useEffect(() => {
     const query = debouncedSearchQuery.trim().toLowerCase();
-    let result = products;
-    
-    if (query) {
-      result = result.filter(p => 
-        p.title.toLowerCase().includes(query) ||
-        p.description.toLowerCase().includes(query)
-      );
+    let result = products.slice();
+    if (selectedCategory !== 'all') {
+      result = result.filter(p => p.category === selectedCategory);
     }
-    
+    if (query) {
+      result = result.filter(p => (p.title || '').toLowerCase().includes(query) || (p.description || '').toLowerCase().includes(query));
+    }
     setFilteredProducts(result);
-  }, [debouncedSearchQuery, products]);
+  }, [debouncedSearchQuery, products, selectedCategory]);
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const focusSearch = () => {
+    inputRef.current?.focus();
+  };
 
   const startVoiceSearch = () => {
     setIsListening(true);
-    // Simulated voice recognition
     setTimeout(() => {
-      const demoQueries = ['electronics', 'jewelery', 'men\'s clothing'];
+      const demoQueries = ['electronics', 'jewelery', "men's clothing"];
       const randomQuery = demoQueries[Math.floor(Math.random() * demoQueries.length)];
       setSearchQuery(randomQuery);
       setIsListening(false);
@@ -87,83 +91,82 @@ const Home: React.FC<HomeProps> = ({ addToCart, isDarkMode }) => {
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-8 max-w-7xl">
-      <header className="mb-16 text-center">
-        <div className={`inline-block px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 animate-float ${isDarkMode ? 'bg-pink-900/20 text-pink-400' : 'bg-pink-50 text-pink-600'}`}>
-          BIG SUMMER SALE 2026
-        </div>
-        <h1 className={`text-5xl md:text-7xl font-black mb-6 transition-all duration-700 tracking-tighter leading-none ${isDarkMode ? 'text-white' : 'text-rose-950'}`} data-test="home-title">
-          SHOP THE BEST <br /> 
-          <span className="text-gradient">DEALS TODAY</span>
-        </h1>
-        <p className={`mb-12 max-w-xl mx-auto font-medium text-lg leading-relaxed transition-all duration-700 ${isDarkMode ? 'text-pink-200/60' : 'text-pink-900/60'}`}>
-          Explore thousands of premium products at unbeatable prices. Everything you need, just a click away.
-        </p>
-        
-        <div className={`max-w-3xl mx-auto space-y-8 backdrop-blur-md p-8 rounded-3xl border shadow-2xl transition-all duration-700 ${isDarkMode ? 'bg-rose-950/30 border-pink-500/10' : 'bg-white/30 border-pink-100'}`}>
-          <div className="relative group">
-            <span className={`material-icons absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isDarkMode ? 'text-pink-700 group-focus-within:text-pink-400' : 'text-pink-200 group-focus-within:text-pink-600'}`}>search</span>
-            <input
-              type="text"
-              placeholder="Search products..."
-              className={`w-full pl-12 pr-14 py-4 rounded-2xl border-0 outline-none transition-all shadow-inner text-lg font-medium ${isDarkMode ? 'bg-rose-950 text-white focus:ring-2 focus:ring-pink-500' : 'bg-white text-rose-950 focus:ring-2 focus:ring-pink-600'}`}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              data-test="search-input"
-            />
-            <button 
-              onClick={startVoiceSearch}
-              className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-all ${isListening ? 'bg-pink-500 text-white animate-pulse' : isDarkMode ? 'text-pink-400 hover:text-white hover:bg-rose-900' : 'text-pink-300 hover:text-pink-600 hover:bg-pink-50'}`}
-              title="Voice Search"
-            >
-              <span className="material-icons text-2xl">{isListening ? 'mic' : 'mic_none'}</span>
-            </button>
-          </div>
-          
-          <div className="flex flex-wrap justify-center gap-3" data-test="category-filters">
-            <button
-              onClick={() => setSelectedCategory('all')}
-              className={`px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-lg ${selectedCategory === 'all' ? (isDarkMode ? 'bg-pink-600 text-white shadow-pink-900/40' : 'bg-pink-600 text-white shadow-pink-200') : (isDarkMode ? 'bg-rose-900 text-pink-300 hover:bg-rose-800 border border-pink-500/10' : 'bg-white text-pink-600 hover:bg-pink-50 border border-pink-100')}`}
-              data-test="category-all"
-            >
-              All
-            </button>
-            {categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-lg ${selectedCategory === cat ? (isDarkMode ? 'bg-pink-600 text-white shadow-pink-900/40' : 'bg-pink-600 text-white shadow-pink-200') : (isDarkMode ? 'bg-rose-900 text-pink-300 hover:bg-rose-800 border border-pink-500/10' : 'bg-white text-pink-600 hover:bg-pink-50 border border-pink-100')}`}
-                data-test={`category-${cat.replace(/\s+/g, '-')}`}
-              >
-                {cat}
-              </button>
-            ))}
+    <div className="mx-auto max-w-7xl p-4 md:p-8">
+      <header className="mb-10 p-6 md:p-8">
+        <div className="flex flex-col gap-6">
+          <div className="max-w-2xl">
+            <p className={`inline-flex rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] ${isDarkMode ? 'text-pink-100 bg-rose-900/20' : 'text-[#b45309] bg-[#fef2f2]'}`}>New season picks</p>
+            <h1 className={`mt-4 text-4xl font-semibold tracking-tight md:text-5xl ${isDarkMode ? 'text-white' : 'text-[#0f172a]'}`} data-test="home-title">
+              Curated essentials for everyday style.
+            </h1>
+            <p className={`mt-4 text-lg ${isDarkMode ? 'text-slate-200' : 'text-[#334155]'}`}>Discover modern favorites with a minimal aesthetic and fast checkout.</p>
           </div>
 
-          <VisualSearch 
-            allProducts={products} 
-            onSearch={(results) => setVisualSearchResults(results)} 
-            isDarkMode={isDarkMode}
-          />
+          <div className="w-full rounded-[24px] border p-4 shadow-sm">
+            <div className="relative">
+              <button
+                onClick={focusSearch}
+                aria-label="Focus search"
+                className={`absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full flex items-center justify-center z-10 ${isDarkMode ? 'bg-transparent text-white ring-0' : 'bg-white text-[#0f172a] ring-1 ring-[#e6eef6] shadow-lg'}`}
+              >
+                <span className="material-icons">search</span>
+              </button>
+              <input
+                type="text"
+                className={`w-full rounded-lg bg-transparent pl-16 pr-12 py-3 ${isDarkMode ? 'text-white placeholder:text-slate-300' : 'text-[#0f172a] placeholder:text-[#9ca3af]'} focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#e53935]`}
+                ref={inputRef}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                data-test="search-input"
+                aria-label="Search products"
+              />
+              <button
+                onClick={startVoiceSearch}
+                className={`absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-3 z-10 ${isListening ? 'bg-[#e53935] text-white shadow-sm' : (isDarkMode ? 'bg-transparent text-white ring-0 hover:bg-white/10' : 'bg-white text-[#0f172a] border border-[#e6eef6] shadow-sm')}`}
+                title="Voice Search"
+              >
+                <span className="material-icons text-base">{isListening ? 'mic' : 'mic_none'}</span>
+              </button>
+            </div>
+
+            <div className="mt-4">
+              <div className="flex flex-wrap gap-2" data-test="category-filters">
+                <button
+                  onClick={() => setSelectedCategory('all')}
+                  className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] transition ${selectedCategory === 'all' ? 'bg-[#e53935] text-white' : `${isDarkMode ? 'bg-white/5 text-slate-200 border border-white/10 hover:bg-white/10' : 'bg-white text-[#334155] hover:bg-[#e2e8f0]'}`}`}
+                  data-test="category-all"
+                >
+                  All
+                </button>
+                {categories.filter(c => c.toLowerCase() !== "women's clothing").map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] transition ${selectedCategory === cat ? 'bg-[#e53935] text-white' : `${isDarkMode ? 'bg-white/5 text-slate-200 border border-white/10 hover:bg-white/10' : 'bg-white text-[#334155] hover:bg-[#e2e8f0]'}`}`}
+                    data-test={`category-${cat.replace(/\s+/g, '-')}`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              {/* Place Women's Clothing button on its own row under the search controls */}
+              {categories.find(c => c.toLowerCase() === "women's clothing") && (
+                <div className="mt-4">
+                  <button
+                    onClick={() => setSelectedCategory("women's clothing")}
+                    className={`w-full sm:w-auto rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-[0.25em] transition ${selectedCategory === "women's clothing" ? 'bg-[#e53935] text-white' : `${isDarkMode ? 'bg-white/5 text-slate-200 border border-white/10 hover:bg-white/10' : 'bg-white text-[#334155] hover:bg-[#e2e8f0]'}`}`}
+                    data-test="category-womens-clothing"
+                  >
+                    Women's Clothing
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </header>
 
-      {visualSearchResults && (
-        <div className={`mb-8 p-6 rounded-2xl border flex flex-col sm:flex-row items-center justify-between animate-in fade-in slide-in-from-top-4 duration-500 ${isDarkMode ? 'bg-pink-900/10 border-pink-500/20 text-pink-100' : 'bg-pink-50 border-pink-100 text-pink-900'}`}>
-          <div className="flex items-center mb-4 sm:mb-0">
-            <span className={`material-icons mr-3 ${isDarkMode ? 'text-pink-400' : 'text-pink-600'}`}>auto_awesome</span>
-            <h2 className="text-xl font-bold">AI Visual Search Results</h2>
-          </div>
-          <button 
-            onClick={() => setVisualSearchResults(null)}
-            className={`font-bold hover:underline flex items-center ${isDarkMode ? 'text-pink-400' : 'text-pink-600'}`}
-          >
-            <span className="material-icons text-sm mr-1">close</span>
-            Clear Results
-          </button>
-        </div>
-      )}
-      
       {loading ? (
         <div className="flex flex-col items-center justify-center min-h-[40vh]" data-test="loading">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
@@ -172,33 +175,27 @@ const Home: React.FC<HomeProps> = ({ addToCart, isDarkMode }) => {
       ) : error ? (
         <div className="text-center mt-20 text-red-600 p-4" data-test="error-state">
           <p className="text-xl font-bold">{error}</p>
-          <button 
-            onClick={() => setSelectedCategory('all')} 
-            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            Reset Filters
-          </button>
+          <button onClick={() => setSelectedCategory('all')} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">Reset Filters</button>
         </div>
       ) : filteredProducts.length === 0 ? (
         <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl shadow-sm transition-colors" data-test="empty-state">
           <span className="material-icons text-6xl text-gray-200 dark:text-gray-700 mb-4">search_off</span>
           <p className="text-gray-500 dark:text-gray-400 text-lg">No products found matching your criteria.</p>
-          <button 
-            onClick={() => {setSearchQuery(''); setSelectedCategory('all');}}
-            className="mt-4 text-blue-600 dark:text-blue-400 font-bold hover:underline"
-          >
-            Clear all filters
-          </button>
+          <button onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }} className="mt-4 text-blue-600 dark:text-blue-400 font-bold hover:underline">Clear all filters</button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" data-test="product-grid">
-          {(visualSearchResults || filteredProducts).map(product => (
-            <div key={product.id} className="transform hover:-translate-y-2 transition-all duration-300">
-              <ProductCard product={product} addToCart={addToCart} isDarkMode={isDarkMode} />
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-test="product-grid">
+          {filteredProducts.map(product => (
+            <div key={product.id} className="transition-all duration-300">
+              <ProductCard product={product} addToCart={addToCart} removeOneFromCart={removeOneFromCart} cart={cart} favorites={favorites} toggleFavorite={toggleFavorite} isDarkMode={isDarkMode} />
             </div>
           ))}
         </div>
       )}
+
+      <footer className="mt-12 rounded-[32px] border border-[#f2e8e8] bg-white/80 px-6 py-6 text-center text-sm text-[#6b7280] shadow-sm">
+        <p>Minimal essentials • Fast delivery • Thoughtful design</p>
+      </footer>
 
       <MysteryBox isDarkMode={isDarkMode} />
     </div>

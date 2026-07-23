@@ -4,8 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "newman run collections/FakeStoreAPI.postman_collection.json -e environments/FakeStore-Dev.postman_environment.json -r cli,htmlextra,json --reporter-json-export reports/report.json --reporter-htmlextra-export reports/report.html --reporter-htmlextra-title \"Fake Store API Test Report\"; node -e \"const fs = require('fs'); const date = new Date().toISOString().replace(/[:.]/g, '-'); if (fs.existsSync('reports/report.html')) fs.copyFileSync('reports/report.html', 'reports/report-' + date + '.html')\"; npm run report",
-    "report": "node generate-pdf.js"
+    "test": "node run-tests.js",
+    "report": "node generate-pdf.js",
+    "test:performance": "k6 run performance/script.js; npm run report",
+    "test:smoke": "k6 run --vus 1 --iterations 1 performance/script.js; npm run report",
+    "test:stress": "k6 run performance/stress-test.js; npm run report",
+    "test:spike": "k6 run performance/spike-test.js; npm run report",
+    "test:soak": "k6 run performance/soak-test.js; npm run report"
   },
   "keywords": [],
   "author": "",
