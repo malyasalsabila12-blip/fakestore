@@ -38,15 +38,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ addToCart, removeOneFro
       });
   }, [id]);
 
-  if (loading) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center" data-test="loading">
-        <div className="mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-[#e53935]"></div>
-        <p className="text-[#6b7280]">Loading product details...</p>
-      </div>
-    );
-  }
-
   const productQuantity = product ? cart.filter(item => item.id === product.id).length : 0;
 
   const [heartPop, setHeartPop] = useState(false);
@@ -62,6 +53,15 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ addToCart, removeOneFro
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productQuantity]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center" data-test="loading">
+        <div className="mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-[#e53935]"></div>
+        <p className="text-[#6b7280]">Loading product details...</p>
+      </div>
+    );
+  }
 
   if (error || !product) {
     return (
