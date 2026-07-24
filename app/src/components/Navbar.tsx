@@ -18,7 +18,7 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount, username, onLogout, isDarkMo
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <Link to="/" className={`flex items-center gap-3 rounded-full px-3 py-2 shadow-sm ${isDarkMode ? 'border border-[#3b0d12] bg-[#261018]/80' : 'border border-[#f1d8d8] bg-white/80'}`} data-test="nav-logo">
-            <img src="/src/assets/malstro-logo.svg" alt="Malstro logo" className={`${isDarkMode ? 'h-10 w-10 rounded-full filter contrast-90' : 'h-10 w-10 rounded-full'}`} />
+            <img src="/malstro-logo.svg" alt="Malstro logo" className={`${isDarkMode ? 'h-10 w-10 rounded-full filter contrast-90' : 'h-10 w-10 rounded-full'}`} />
             <div>
               <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${isDarkMode ? 'text-pink-200' : 'text-[#b45309]'}`}>Malstro</p>
               <p className={`text-sm font-semibold ${isDarkMode ? 'text-slate-200' : 'text-[#111111]'}`}>Modern commerce</p>

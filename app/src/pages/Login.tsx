@@ -9,6 +9,7 @@ interface LoginProps {
 const Login: React.FC<LoginProps> = ({ onLogin, isDarkMode }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -66,7 +67,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, isDarkMode }) => {
         <div className={`flex flex-1 flex-col justify-center p-8 md:p-12 ${isDarkMode ? 'bg-transparent text-white' : ''}`}>
           <div className="mx-auto w-full max-w-md">
             <div className="mb-8 flex items-center justify-center">
-              <img src="/src/assets/malstro-logo.svg" alt="Malstro logo" className="h-16 w-16" />
+              <img src="/malstro-logo.svg" alt="Malstro logo" className="h-16 w-16" />
             </div>
             <h2 className={`text-center text-2xl font-semibold ${isDarkMode ? 'text-white' : 'text-[#111111]'}`}>Sign in</h2>
             <p className={`mt-2 text-center text-sm ${isDarkMode ? 'text-slate-300' : 'text-[#6b7280]'}`}>Use your Malstro account to continue.</p>
@@ -92,22 +93,29 @@ const Login: React.FC<LoginProps> = ({ onLogin, isDarkMode }) => {
               </div>
               <div>
                 <label className={`mb-2 block text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-[#111111]'}`}>Password</label>
-                <input
-                  type="password"
-                  required
-                  className={`${isDarkMode ? 'w-full rounded-[18px] border border-[#35131f] bg-[#2f1922] px-4 py-3 text-sm text-white outline-none placeholder:text-slate-400 focus:border-[#e53935]' : 'w-full rounded-[18px] border border-[#f2e8e8] bg-[#fcf8f8] px-4 py-3 text-sm outline-none focus:border-[#e53935]'}`}
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
                     className={`${isDarkMode ? 'w-full rounded-[18px] border border-[#35131f] bg-[#2f1922] px-4 py-3 text-sm text-white outline-none placeholder:text-slate-400 focus:border-[#e53935]' : 'w-full rounded-[18px] border border-[#f2e8e8] bg-[#fcf8f8] px-4 py-3 text-sm outline-none focus:border-[#e53935]'} focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#e53935]`}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  data-test="password-input"
-                  placeholder="serverqa123"
-                />
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    data-test="password-input"
+                    placeholder="serverqa123"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    <span className="material-icons text-xl">{showPassword ? 'visibility_off' : 'visibility'}</span>
+                  </button>
+                </div>
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-full bg-[#e53935] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#c62828] disabled:opacity-70"
-                  className="w-full rounded-full bg-[#e53935] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#c62828] disabled:opacity-70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e53935]"
+                className="w-full rounded-full bg-[#e53935] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#c62828] disabled:opacity-70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e53935]"
                 data-test="login-submit"
               >
                 {loading ? 'Signing in...' : 'Continue'}
