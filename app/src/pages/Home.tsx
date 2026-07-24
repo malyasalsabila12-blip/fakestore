@@ -193,7 +193,11 @@ const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorit
         </div>
       )}
 
-      <footer className="mt-12 rounded-[32px] border border-[#f2e8e8] bg-white/80 px-6 py-6 text-center text-sm text-[#6b7280] shadow-sm">
+      <footer className={`mt-12 rounded-[32px] border px-6 py-6 text-center text-sm shadow-sm transition-colors duration-300 ${
+        isDarkMode 
+          ? 'border-[#35131f] bg-[#231018]/80 text-slate-400' 
+          : 'border-[#f2e8e8] bg-white/80 text-[#6b7280]'
+      }`}>
         <p>Minimal essentials • Fast delivery • Thoughtful design</p>
       </footer>
 
