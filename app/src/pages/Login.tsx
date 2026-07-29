@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 interface LoginProps {
   onLogin: (username: string) => void;
-  isDarkMode: boolean;
 }
 
-const Login: React.FC<LoginProps> = ({ onLogin, isDarkMode }) => {
+const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -20,7 +19,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, isDarkMode }) => {
     setError('');
 
     try {
-      if (username === 'malya' && password === 'serverqa123') {
+      if ((username === 'malyasqa' || username === 'harfymalya@gmail.com') && password === 'serverqa123') {
         onLogin(username);
         navigate('/');
         return;
@@ -49,55 +48,39 @@ const Login: React.FC<LoginProps> = ({ onLogin, isDarkMode }) => {
   };
 
   return (
-    <div className={`min-h-screen px-4 py-10 transition-colors duration-500 ${isDarkMode ? 'bg-[#1f0f14]' : 'bg-[#fffdfa]'}`}>
-        <div className={`mx-auto flex min-h-[80vh] max-w-6xl flex-col overflow-hidden rounded-[36px] lg:flex-row ${isDarkMode ? 'border border-[#35131f] bg-[#1b0e12] text-white shadow-sm' : 'border border-[#f2e8e8] bg-white shadow-sm'}`}>
-          {isDarkMode && (
-            <div className={`flex flex-1 flex-col justify-center bg-gradient-to-br p-8 md:p-12 ${isDarkMode ? 'from-[#261018] to-[#1f0f14] text-white' : 'from-[#fff6f6] to-white text-[#111111]'}`}>
-              <p className={`text-[11px] font-semibold uppercase tracking-[0.35em] ${isDarkMode ? 'text-pink-200' : 'text-[#e53935]'}`}>Malstro</p>
-              <h1 className={`mt-4 text-4xl font-semibold tracking-tight md:text-5xl ${isDarkMode ? 'text-white' : ''}`} data-test="login-title">Welcome back to your next favorite find.</h1>
-              <p className={`mt-4 max-w-md text-lg ${isDarkMode ? 'text-slate-300' : 'text-[#334155]'}`}>Sign in to discover curated essentials and enjoy a faster checkout experience.</p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <span className={`rounded-full px-3 py-2 text-sm ${isDarkMode ? 'bg-white/5 text-slate-200' : 'bg-[#fef2f2] text-[#b45309]'}`}>Fast delivery</span>
-                <span className={`rounded-full px-3 py-2 text-sm ${isDarkMode ? 'bg-white/5 text-slate-200' : 'bg-[#fef2f2] text-[#b45309]'}`}>Secure checkout</span>
-                <span className={`rounded-full px-3 py-2 text-sm ${isDarkMode ? 'bg-white/5 text-slate-200' : 'bg-[#fef2f2] text-[#b45309]'}`}>Premium picks</span>
-              </div>
-            </div>
-          )}
-
-        <div className={`flex flex-1 flex-col justify-center p-8 md:p-12 ${isDarkMode ? 'bg-transparent text-white' : ''}`}>
+    <div className={`min-h-screen px-4 py-10 transition-colors duration-500 bg-white`}>
+        <div className={`mx-auto flex min-h-[80vh] max-w-lg flex-col border border-black bg-white shadow-none`}>
+        <div className="flex flex-1 flex-col justify-center p-8 md:p-12 text-black">
           <div className="mx-auto w-full max-w-md">
-            <div className="mb-8 flex items-center justify-center">
-              <img src="/malstro-logo.svg" alt="Malstro logo" className="h-16 w-16" />
-            </div>
-            <h2 className={`text-center text-2xl font-semibold ${isDarkMode ? 'text-white' : 'text-[#111111]'}`}>Sign in</h2>
-            <p className={`mt-2 text-center text-sm ${isDarkMode ? 'text-slate-300' : 'text-[#6b7280]'}`}>Use your Malstro account to continue.</p>
+            <h2 className="text-center text-3xl font-black uppercase tracking-widest text-black">Sign in</h2>
+            <p className="mt-2 text-center text-xs uppercase tracking-wider text-zinc-500">Access your beauty account</p>
 
             {error && (
-              <div className="mt-6 rounded-[20px] border border-[#f1c1c1] bg-[#fff5f5] px-4 py-3 text-sm text-[#c62828]" data-test="login-error">
+              <div className="mt-6 border border-red-600 bg-red-50 px-4 py-3 text-sm text-red-600 font-bold" data-test="login-error">
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-              <div>
-                <label className={`mb-2 block text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-[#111111]'}`}>Username</label>
+            <form onSubmit={handleSubmit} className="mt-10 space-y-6">
+              <div className="space-y-1">
+                <label className="block text-xs font-black uppercase tracking-widest">Username or Email</label>
                 <input
                   type="text"
                   required
-                  className={`${isDarkMode ? 'w-full rounded-[18px] border border-[#35131f] bg-[#2f1922] px-4 py-3 text-sm text-white outline-none placeholder:text-slate-400 focus:border-[#e53935]' : 'w-full rounded-[18px] border border-[#f2e8e8] bg-[#fcf8f8] px-4 py-3 text-sm outline-none focus:border-[#e53935]'} focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#e53935]`}
+                  className={`w-full border-b border-black py-3 text-sm outline-none bg-transparent border-black`}
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   data-test="username-input"
-                  placeholder="malya"
+                  placeholder="malyasqa or harfymalya@gmail.com"
                 />
               </div>
-              <div>
-                <label className={`mb-2 block text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-[#111111]'}`}>Password</label>
+              <div className="space-y-1">
+                <label className="block text-xs font-black uppercase tracking-widest">Password</label>
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
                     required
-                    className={`${isDarkMode ? 'w-full rounded-[18px] border border-[#35131f] bg-[#2f1922] px-4 py-3 text-sm text-white outline-none placeholder:text-slate-400 focus:border-[#e53935]' : 'w-full rounded-[18px] border border-[#f2e8e8] bg-[#fcf8f8] px-4 py-3 text-sm outline-none focus:border-[#e53935]'} focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#e53935]`}
+                    className={`w-full border-b border-black py-3 text-sm outline-none bg-transparent border-black text-black placeholder:text-zinc-400`}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     data-test="password-input"
@@ -106,7 +89,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, isDarkMode }) => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-black"
                   >
                     <span className="material-icons text-xl">{showPassword ? 'visibility_off' : 'visibility'}</span>
                   </button>
@@ -115,18 +98,28 @@ const Login: React.FC<LoginProps> = ({ onLogin, isDarkMode }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-full bg-[#e53935] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#c62828] disabled:opacity-70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e53935]"
+                className="w-full bg-[#F0F2F5] dark:bg-zinc-800 rounded-full px-4 py-4 text-sm font-bold text-black dark:text-white transition hover:opacity-90 disabled:opacity-70"
                 data-test="login-submit"
               >
-                {loading ? 'Signing in...' : 'Continue'}
+                {loading ? 'Verifying...' : 'Sign In'}
               </button>
             </form>
 
-            <div className={`${isDarkMode ? 'mt-6 rounded-[24px] border border-[#35131f] bg-[#231018] p-4 text-sm' : 'mt-6 rounded-[24px] border border-[#f2e8e8] bg-[#fcf8f8] p-4 text-sm text-[#6b7280]'}`}>
-              <p className={`font-semibold ${isDarkMode ? 'text-white' : 'text-[#111111]'}`}>Demo access</p>
-              <div className="mt-2 flex items-center justify-between">
-                <span className={`${isDarkMode ? 'text-slate-300' : ''}`}>Username: malya</span>
-                <span className={`${isDarkMode ? 'text-slate-300' : ''}`}>Password: serverqa123</span>
+            <div className="mt-4">
+              <Link to="/signup" className="block w-full bg-black dark:bg-white dark:text-black rounded-full px-4 py-4 text-sm font-bold text-white text-center transition hover:opacity-90">
+                New to Malstro? Create Account
+              </Link>
+            </div>
+
+            <div className="mt-12 border border-dashed border-zinc-300 p-6 text-xs text-zinc-500">
+              <p className="font-black uppercase tracking-widest text-black dark:text-white mb-2">Demo access</p>
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-between">
+                  <span>User/Email: malyasqa / harfymalya@gmail.com</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Pass: serverqa123</span>
+                </div>
               </div>
             </div>
           </div>

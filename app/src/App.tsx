@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
 import Login from './pages/Login';
+import SignUp from './pages/SignUp';
 import SlideOverCart from './components/SlideOverCart';
 import ScrollToTop from './components/ScrollToTop';
 import { Product } from './types';
@@ -14,20 +15,10 @@ function App() {
   const [cart, setCart] = useState<Product[]>([]);
   const [user, setUser] = useState<string | null>(localStorage.getItem('user'));
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
-    return localStorage.getItem('theme') === 'dark' || 
-      (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  });
 
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDarkMode]);
+    document.documentElement.classList.remove('dark');
+  }, []);
 
   const [favorites, setFavorites] = useState<number[]>(() => {
     try {
@@ -48,8 +39,6 @@ function App() {
       return [...prev, product.id];
     });
   };
-
-  const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
 
   const addToCart = (product: Product) => {
     setCart([...cart, product]);
@@ -85,38 +74,40 @@ function App() {
 
   const MainContent = () => {
     const location = useLocation();
-    const isLoginRoute = location.pathname === '/login';
+    const isAuthRoute = location.pathname === '/login' || location.pathname === '/signup';
 
     return (
-      <div className={`min-h-screen transition-colors duration-700 relative overflow-hidden ${isDarkMode ? 'bg-[#1f0f14]' : 'bg-[#fffdfa]'}`}>
+      <div className={`min-h-screen transition-colors duration-300 relative bg-white`}>
 
         {user && (
           <Navbar 
             cartCount={cart.length} 
             onLogout={handleLogout} 
             username={user} 
-            isDarkMode={isDarkMode}
-            toggleDarkMode={toggleDarkMode}
             onOpenCart={() => setIsCartOpen(true)}
           />
         )}
-        <main className={`relative z-10 ${isLoginRoute ? 'pt-0' : 'pt-24'}`}>
+        <main className={`relative ${isAuthRoute ? 'pt-0' : 'pt-24'}`}>
           <Routes>
             <Route 
               path="/login" 
-              element={!user ? <Login onLogin={handleLogin} isDarkMode={isDarkMode} /> : <Navigate to="/" />} 
+              element={!user ? <Login onLogin={handleLogin} /> : <Navigate to="/" />} 
+            />
+            <Route 
+              path="/signup" 
+              element={!user ? <SignUp /> : <Navigate to="/" />} 
             />
             <Route 
               path="/" 
-              element={user ? <Home addToCart={addToCart} removeOneFromCart={removeOneFromCart} cart={cart} favorites={favorites} toggleFavorite={toggleFavorite} isDarkMode={isDarkMode} /> : <Navigate to="/login" />} 
+              element={user ? <Home addToCart={addToCart} removeOneFromCart={removeOneFromCart} cart={cart} favorites={favorites} toggleFavorite={toggleFavorite} /> : <Navigate to="/login" />} 
             />
             <Route 
               path="/product/:id" 
-              element={user ? <ProductDetails addToCart={addToCart} removeOneFromCart={removeOneFromCart} cart={cart} favorites={favorites} toggleFavorite={toggleFavorite} isDarkMode={isDarkMode} /> : <Navigate to="/login" />} 
+              element={user ? <ProductDetails addToCart={addToCart} removeOneFromCart={removeOneFromCart} cart={cart} favorites={favorites} toggleFavorite={toggleFavorite} /> : <Navigate to="/login" />} 
             />
             <Route 
               path="/cart" 
-              element={user ? <Cart cart={cart} removeFromCart={removeFromCart} clearCart={clearCart} isDarkMode={isDarkMode} /> : <Navigate to="/login" />} 
+              element={user ? <Cart cart={cart} removeFromCart={removeFromCart} clearCart={clearCart} /> : <Navigate to="/login" />} 
             />
           </Routes>
         </main>
@@ -128,7 +119,6 @@ function App() {
             onClose={() => setIsCartOpen(false)}
             removeFromCart={removeFromCart}
             clearCart={clearCart}
-            isDarkMode={isDarkMode}
           />
         )}
       </div>

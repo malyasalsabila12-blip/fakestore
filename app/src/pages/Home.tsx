@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import ProductCard from '../components/ProductCard';
 import MysteryBox from '../components/MysteryBox';
@@ -10,10 +11,9 @@ interface HomeProps {
   cart: Product[];
   favorites: number[];
   toggleFavorite: (product: Product) => void;
-  isDarkMode: boolean;
 }
 
-const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorites, toggleFavorite, isDarkMode }) => {
+const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorites, toggleFavorite }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isListening, setIsListening] = useState(false);
@@ -90,118 +90,155 @@ const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorit
     }, 2000);
   };
 
+  const [activeSlide, setActiveSlide] = useState(0);
+  const slides = [
+    {
+      tag: 'Malstro',
+      title: 'READY, SET, SHOP!',
+      desc: "Don't miss out on special discounts and first-dibs on fresh arrivals, exclusively on the Malstro app.",
+      discount: 'UP TO 30% OFF',
+      color: 'bg-black'
+    },
+    {
+      tag: 'Malstro',
+      title: 'UNMISSABLE APP DEALS!',
+      desc: 'Unlock exclusive savings & get early access to new arrivals only on the Malstro app.',
+      discount: 'EXTRA 15% OFF',
+      color: 'bg-zinc-900'
+    }
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveSlide(prev => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="mx-auto max-w-7xl p-4 md:p-8">
-      <header className="mb-10 p-6 md:p-8">
-        <div className="flex flex-col gap-6">
-          <div className="max-w-2xl">
-            <p className={`inline-flex rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] ${isDarkMode ? 'text-pink-100 bg-rose-900/20' : 'text-[#b45309] bg-[#fef2f2]'}`}>New season picks</p>
-            <h1 className={`mt-4 text-4xl font-semibold tracking-tight md:text-5xl ${isDarkMode ? 'text-white' : 'text-[#0f172a]'}`} data-test="home-title">
-              Curated essentials for everyday style.
+      <header className={`mb-10 overflow-hidden relative min-h-[400px] flex items-center transition-all duration-1000 ${slides[activeSlide].color} text-white`}>
+        <div className="flex flex-col md:flex-row w-full h-full">
+          <div className="flex-1 p-8 md:p-16 flex flex-col justify-center z-10">
+            <p key={`tag-${activeSlide}`} className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 animate-slide-up">
+              {slides[activeSlide].tag}
+            </p>
+            <h1 key={`title-${activeSlide}`} className="mt-4 text-5xl font-black uppercase tracking-tight md:text-7xl animate-slide-up" style={{ animationDelay: '100ms' }}>
+              {slides[activeSlide].title}
             </h1>
-            <p className={`mt-4 text-lg ${isDarkMode ? 'text-slate-200' : 'text-[#334155]'}`}>Discover modern favorites with a minimal aesthetic and fast checkout.</p>
-          </div>
-
-          <div className="w-full rounded-[24px] border p-4 shadow-sm">
-            <div className="relative">
-              <button
-                onClick={focusSearch}
-                aria-label="Focus search"
-                className={`absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full flex items-center justify-center z-10 ${isDarkMode ? 'bg-transparent text-white ring-0' : 'bg-white text-[#0f172a] ring-1 ring-[#e6eef6] shadow-lg'}`}
-              >
-                <span className="material-icons">search</span>
+            <p key={`desc-${activeSlide}`} className="mt-6 text-lg text-zinc-300 max-w-md animate-slide-up" style={{ animationDelay: '200ms' }}>
+              {slides[activeSlide].desc}
+            </p>
+            <div className="mt-10 flex flex-wrap items-center gap-6">
+              <button className="bg-white text-black px-10 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 transition shadow-xl">
+                Shop the Sale
               </button>
-              <input
-                type="text"
-                className={`w-full rounded-lg bg-transparent pl-16 pr-12 py-3 ${isDarkMode ? 'text-white placeholder:text-slate-300' : 'text-[#0f172a] placeholder:text-[#9ca3af]'} focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#e53935]`}
-                ref={inputRef}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                data-test="search-input"
-                aria-label="Search products"
-              />
-              <button
-                onClick={startVoiceSearch}
-                className={`absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-3 z-10 ${isListening ? 'bg-[#e53935] text-white shadow-sm' : (isDarkMode ? 'bg-transparent text-white ring-0 hover:bg-white/10' : 'bg-white text-[#0f172a] border border-[#e6eef6] shadow-sm')}`}
-                title="Voice Search"
-              >
-                <span className="material-icons text-base">{isListening ? 'mic' : 'mic_none'}</span>
-              </button>
-            </div>
-
-            <div className="mt-4">
-              <div className="flex flex-wrap gap-2" data-test="category-filters">
-                <button
-                  onClick={() => setSelectedCategory('all')}
-                  className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] transition ${selectedCategory === 'all' ? 'bg-[#e53935] text-white' : `${isDarkMode ? 'bg-white/5 text-slate-200 border border-white/10 hover:bg-white/10' : 'bg-white text-[#334155] hover:bg-[#e2e8f0]'}`}`}
-                  data-test="category-all"
-                >
-                  All
-                </button>
-                {categories.filter(c => c.toLowerCase() !== "women's clothing").map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] transition ${selectedCategory === cat ? 'bg-[#e53935] text-white' : `${isDarkMode ? 'bg-white/5 text-slate-200 border border-white/10 hover:bg-white/10' : 'bg-white text-[#334155] hover:bg-[#e2e8f0]'}`}`}
-                    data-test={`category-${cat.replace(/\s+/g, '-')}`}
-                  >
-                    {cat}
-                  </button>
-                ))}
+              <div key={`discount-${activeSlide}`} className="discount-tag animate-shimmer px-8 py-4 text-2xl font-black italic tracking-tighter animate-discount-pop flex flex-col items-start leading-none">
+                <span className="text-[10px] not-italic tracking-[0.2em] opacity-80 mb-1">LIMITED TIME</span>
+                {slides[activeSlide].discount}
               </div>
-
-              {/* Place Women's Clothing button on its own row under the search controls */}
-              {categories.find(c => c.toLowerCase() === "women's clothing") && (
-                <div className="mt-4">
-                  <button
-                    onClick={() => setSelectedCategory("women's clothing")}
-                    className={`w-full sm:w-auto rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-[0.25em] transition ${selectedCategory === "women's clothing" ? 'bg-[#e53935] text-white' : `${isDarkMode ? 'bg-white/5 text-slate-200 border border-white/10 hover:bg-white/10' : 'bg-white text-[#334155] hover:bg-[#e2e8f0]'}`}`}
-                    data-test="category-womens-clothing"
-                  >
-                    Women's Clothing
-                  </button>
-                </div>
-              )}
             </div>
           </div>
+          
+          <div className="hidden md:block flex-1 relative min-h-[400px] overflow-hidden">
+             <div className="absolute inset-0 flex items-center justify-center opacity-10 select-none">
+                <span className="text-[180px] font-black uppercase rotate-90 tracking-widest">MALSTRO</span>
+             </div>
+             {/* Animated floating elements */}
+             <div className="absolute top-1/4 right-1/4 w-32 h-32 border-4 border-white/5 animate-float"></div>
+             <div className="absolute bottom-1/4 left-1/4 w-48 h-48 border border-white/10 animate-float" style={{ animationDelay: '1s' }}></div>
+          </div>
+        </div>
+
+        {/* Slide Indicators */}
+        <div className="absolute bottom-8 left-8 md:left-16 flex gap-2">
+           {slides.map((_, i) => (
+             <div 
+               key={i} 
+               className={`h-1 transition-all duration-500 ${i === activeSlide ? 'w-12 bg-white' : 'w-4 bg-white/20'}`}
+             />
+           ))}
         </div>
       </header>
 
+      <div className="mb-12 flex flex-wrap items-center justify-between gap-6 border-b border-zinc-200 dark:border-zinc-800 pb-8">
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setSelectedCategory('all')}
+            className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest transition border ${
+              selectedCategory === 'all'
+                ? 'bg-black text-white border-black'
+                : 'bg-white text-black border-zinc-200 hover:border-black'
+            }`}
+          >
+            All
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest transition border ${
+                selectedCategory === cat
+                  ? 'bg-black text-white border-black'
+                  : 'bg-white text-black border-zinc-200 hover:border-black'
+              }`}
+              data-test={`category-${cat}`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+        <div className="relative w-full max-w-xs">
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Search these products"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={`w-full border-b border-black py-2 text-sm outline-none bg-transparent`}
+          />
+          <span className="material-icons absolute right-0 top-2 text-lg">search</span>
+        </div>
+      </div>
+
       {loading ? (
         <div className="flex flex-col items-center justify-center min-h-[40vh]" data-test="loading">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Updating collection...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-black mb-4"></div>
+          <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Curating collection...</p>
         </div>
       ) : error ? (
         <div className="text-center mt-20 text-red-600 p-4" data-test="error-state">
           <p className="text-xl font-bold">{error}</p>
-          <button onClick={() => setSelectedCategory('all')} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">Reset Filters</button>
+          <button onClick={() => setSelectedCategory('all')} className="mt-4 bg-black text-white px-6 py-2 text-xs font-black uppercase tracking-widest">Retry</button>
         </div>
       ) : filteredProducts.length === 0 ? (
-        <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl shadow-sm transition-colors" data-test="empty-state">
-          <span className="material-icons text-6xl text-gray-200 dark:text-gray-700 mb-4">search_off</span>
-          <p className="text-gray-500 dark:text-gray-400 text-lg">No products found matching your criteria.</p>
-          <button onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }} className="mt-4 text-blue-600 dark:text-blue-400 font-bold hover:underline">Clear all filters</button>
+        <div className="text-center py-20 border border-zinc-200" data-test="empty-state">
+          <p className="text-zinc-500 text-xs font-black uppercase tracking-widest">No results found.</p>
+          <button onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }} className="mt-4 text-black font-black uppercase tracking-widest text-[10px] hover:underline">Clear Filters</button>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-test="product-grid">
           {filteredProducts.map(product => (
-            <div key={product.id} className="transition-all duration-300">
-              <ProductCard product={product} addToCart={addToCart} removeOneFromCart={removeOneFromCart} cart={cart} favorites={favorites} toggleFavorite={toggleFavorite} isDarkMode={isDarkMode} />
+            <div key={product.id}>
+              <ProductCard product={product} addToCart={addToCart} removeOneFromCart={removeOneFromCart} cart={cart} favorites={favorites} toggleFavorite={toggleFavorite} />
             </div>
           ))}
         </div>
       )}
 
-      <footer className={`mt-12 rounded-[32px] border px-6 py-6 text-center text-sm shadow-sm transition-colors duration-300 ${
-        isDarkMode 
-          ? 'border-[#35131f] bg-[#231018]/80 text-slate-400' 
-          : 'border-[#f2e8e8] bg-white/80 text-[#6b7280]'
-      }`}>
-        <p>Minimal essentials • Fast delivery • Thoughtful design</p>
+      <footer className={`mt-20 border-t py-12 text-center transition-colors duration-300 border-zinc-200 text-zinc-600`}>
+        <div className="flex flex-col items-center gap-6">
+          <h2 className="text-xl font-black uppercase tracking-[0.3em] text-black">MALSTRO</h2>
+          <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest">
+            <Link to="/" className="hover:text-black">About Us</Link>
+            <Link to="/" className="hover:text-black">Shipping</Link>
+            <Link to="/" className="hover:text-black">FAQ</Link>
+            <Link to="/" className="hover:text-black">Privacy</Link>
+          </div>
+          <p className="mt-4 text-[9px] uppercase tracking-widest">© 2026 Malstro Asia Pte. Ltd.</p>
+        </div>
       </footer>
-
-      <MysteryBox isDarkMode={isDarkMode} />
+      <MysteryBox />
     </div>
   );
 };

@@ -7,10 +7,9 @@ interface CartProps {
   cart: Product[];
   removeFromCart: (index: number) => void;
   clearCart: () => void;
-  isDarkMode: boolean;
 }
 
-const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, isDarkMode }) => {
+const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart }) => {
   const [voucherCode, setVoucherCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState<{ code: string; amount: number; type: 'percent' | 'flat' } | null>(null);
   const [voucherError, setVoucherError] = useState('');
@@ -28,7 +27,6 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, isDarkMode
 
   const discountAmount = calculateDiscount();
   const finalTotal = Math.max(0, totalNum - discountAmount).toFixed(2);
-  const total = totalNum.toFixed(2);
 
   const applyVoucher = () => {
     const code = voucherCode.trim().toUpperCase();
@@ -59,109 +57,113 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, isDarkMode
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-8">
       <Confetti active={showConfetti} />
-      <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+      <div className="mb-10 flex flex-col gap-3 md:flex-row md:items-end md:justify-between border-b border-black dark:border-zinc-800 pb-8">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-[#b45309]">Checkout</p>
-          <h1 className={`text-3xl font-semibold tracking-tight ${isDarkMode ? 'text-white' : 'text-[#111111]'}`} data-test="cart-title">Your bag</h1>
+          <p className="text-[11px] font-black uppercase tracking-[0.4em] text-zinc-500">Checkout</p>
+          <h1 className={`text-4xl font-black uppercase tracking-tight text-black`} data-test="cart-title">Your bag</h1>
         </div>
-        <Link to="/" className={`text-sm font-semibold transition ${isDarkMode ? 'text-slate-300 hover:text-white' : 'text-[#6b7280] hover:text-[#111111]'}`}>Continue shopping</Link>
+        <Link to="/" className={`text-[10px] font-black uppercase tracking-widest transition text-zinc-500 hover:text-black`}>Continue shopping</Link>
       </div>
 
         {cart.length === 0 ? (
-        <div className={`${isDarkMode ? 'rounded-[36px] border border-[#35131f] bg-[#231018] p-10 text-center shadow-sm' : 'rounded-[36px] border border-[#f2e8e8] bg-white p-10 text-center shadow-sm'}`} data-test="empty-cart-msg">
-          <div className={`mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full ${isDarkMode ? 'bg-white/10 text-white' : 'bg-[#fff7ed] text-[#e53935]'}`}>
-            <span className="material-icons text-4xl">shopping_basket</span>
+        <div className={`border border-zinc-200 p-20 text-center bg-white`} data-test="empty-cart-msg">
+          <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center">
+            <span className="material-icons text-6xl text-zinc-200">shopping_basket</span>
           </div>
-          <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-[#111111]'}`}>Your cart is empty</h2>
-          <p className={`mt-2 text-sm ${isDarkMode ? 'text-slate-300' : 'text-[#6b7280]'}`}>Add a few favorites to see them here.</p>
-          <Link to="/" className="mt-6 inline-flex rounded-full bg-[#e53935] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#c62828]">Start shopping</Link>
+          <h2 className="text-xl font-black uppercase tracking-widest">Your bag is empty</h2>
+          <p className="mt-2 text-xs font-black uppercase tracking-widest text-zinc-500">Add a few favorites to see them here.</p>
+          <Link to="/" className="mt-10 inline-flex bg-black px-10 py-4 text-xs font-black uppercase tracking-widest text-white transition hover:bg-zinc-800">Start shopping</Link>
         </div>
       ) : (
-        <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-          <div className={`${isDarkMode ? 'rounded-[36px] border border-[#35131f] bg-[#231018] p-6 shadow-sm md:p-8' : 'rounded-[36px] border border-[#f2e8e8] bg-white p-6 shadow-sm md:p-8'}`}>
-            <div className={`${isDarkMode ? 'rounded-[24px] bg-[#2f1922] p-5' : 'rounded-[24px] bg-[#fcf8f8] p-5'}`}>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-[#b45309]">Rewards</p>
-              <div className="mt-3 flex items-end justify-between">
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="space-y-6">
+            <div className={`border p-6 bg-zinc-50 border-zinc-200`}>
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-red-600">Rewards</p>
+              <div className="mt-4 flex items-end justify-between">
                 <div>
-                  <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-[#111111]'}`}>{isAllReached ? 'Max savings reached' : `Add $${(nextMilestone.amount - totalNum).toFixed(2)} more`}</h3>
-                  <p className={`mt-1 text-sm ${isDarkMode ? 'text-slate-300' : 'text-[#6b7280]'}`}>{nextMilestone.label}</p>
+                  <h3 className="text-sm font-black uppercase tracking-widest">{isAllReached ? 'Max savings reached' : `Add IDR ${Math.round((nextMilestone.amount - totalNum) * 15000).toLocaleString()} more`}</h3>
+                  <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-zinc-500">{nextMilestone.label}</p>
                 </div>
-                <span className="text-sm font-semibold text-[#e53935]">${total} / ${nextMilestone.amount}</span>
+                <span className="text-xs font-black">IDR {Math.round(totalNum * 15000).toLocaleString()}</span>
               </div>
-              <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#f2e8e8]">
-                <div className="h-full rounded-full bg-[#e53935] transition-all duration-500" style={{ width: `${progress}%` }}></div>
+              <div className="mt-4 h-1 bg-zinc-200 dark:bg-zinc-700">
+                <div className="h-full bg-black dark:bg-white transition-all duration-500" style={{ width: `${progress}%` }}></div>
               </div>
             </div>
 
-            <div className="mt-6 space-y-4">
+            <div className="space-y-4">
               {cart.map((item, index) => (
-                <div key={`${item.id}-${index}`} className={`${isDarkMode ? 'flex items-center gap-4 rounded-[24px] border border-[#35131f] bg-[#231018] p-4' : 'flex items-center gap-4 rounded-[24px] border border-[#f2e8e8] p-4'}`}>
-                  <img src={item.image} alt={item.title} className="h-16 w-16 rounded-[16px] object-contain" />
+                <div key={`${item.id}-${index}`} className={`flex items-center gap-6 border p-6 border-zinc-200 bg-white`}>
+                  <img src={item.image} alt={item.title} className="h-24 w-24 object-contain mix-blend-multiply bg-white p-2" />
                   <div className="min-w-0 flex-1">
-                    <p className={`truncate text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-[#111111]'}`}>{item.title}</p>
-                    <p className={`mt-1 text-sm ${isDarkMode ? 'text-slate-300' : 'text-[#6b7280]'}`}>{item.category}</p>
-                    <p className="mt-2 text-sm font-semibold text-[#e53935]">${item.price}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{item.category}</p>
+                    <h3 className="mt-1 text-sm font-black uppercase tracking-tight truncate">{item.title}</h3>
+                    <p className="mt-2 text-sm font-black">IDR {Math.round(item.price * 15000).toLocaleString()}</p>
                   </div>
-                  <button onClick={() => removeFromCart(index)} className={`${isDarkMode ? 'rounded-full p-2 text-slate-300 transition hover:bg-white/5 hover:text-[#e53935]' : 'rounded-full p-2 text-[#9ca3af] transition hover:bg-[#fcf8f8] hover:text-[#e53935]'}`} data-test="remove-item-btn" title="Remove from cart">
-                    <span className="material-icons text-base">delete_outline</span>
+                  <button onClick={() => removeFromCart(index)} className="p-2 hover:text-red-600 transition">
+                    <span className="material-icons">delete_outline</span>
                   </button>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className={`${isDarkMode ? 'rounded-[36px] border border-[#35131f] bg-[#231018] p-6 shadow-sm md:p-8' : 'rounded-[36px] border border-[#f2e8e8] bg-[#fcf8f8] p-6 shadow-sm md:p-8'}`}>
-            <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-[#111111]'}`}>Order summary</h2>
-
-            <div className="mt-6 space-y-3">
-              <div className="flex items-center justify-between text-sm text-[#6b7280]">
-                <span>Subtotal</span>
-                <span>${total}</span>
-              </div>
-              {appliedDiscount && (
-                <div className="flex items-center justify-between text-sm text-[#6b7280]">
-                  <span>Discount</span>
-                  <span>- ${discountAmount.toFixed(2)}</span>
+          <div className="space-y-6">
+            <div className={`border p-8 border-black bg-white`}>
+              <h2 className="text-lg font-black uppercase tracking-[0.2em] border-b border-zinc-200 dark:border-zinc-800 pb-4 mb-6">Summary</h2>
+              <div className="space-y-4 text-xs font-black uppercase tracking-widest">
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">Subtotal</span>
+                  <span>IDR {Math.round(totalNum * 15000).toLocaleString()}</span>
                 </div>
-              )}
-              <div className="flex items-center justify-between border-t border-[#f2e8e8] pt-3 text-base font-semibold text-[#111111]">
-                <span>Total</span>
-                <span data-test="cart-total">${finalTotal}</span>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">Estimated Shipping</span>
+                  <span className="text-green-600">FREE</span>
+                </div>
+                {appliedDiscount && (
+                  <div className="flex justify-between text-red-600">
+                    <span>Discount ({appliedDiscount.code})</span>
+                    <span>-IDR {Math.round(discountAmount * 15000).toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-lg border-t border-zinc-200 dark:border-zinc-800 pt-4 mt-4">
+                  <span>Total</span>
+                  <span data-test="cart-total">IDR {Math.round(parseFloat(finalTotal) * 15000).toLocaleString()}</span>
+                </div>
               </div>
-            </div>
 
-            <div className="mt-6">
-              <label className={`mb-2 block text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-[#111111]'}`}>Promo code</label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="SAVE10"
-                  className={`${isDarkMode ? 'flex-1 rounded-full border border-[#35131f] bg-[#2f1922] px-4 py-3 text-sm text-white outline-none' : 'flex-1 rounded-full border border-[#f2e8e8] bg-white px-4 py-3 text-sm outline-none'}`}
-                  value={voucherCode}
-                  onChange={(e) => setVoucherCode(e.target.value)}
-                />
-                <button onClick={applyVoucher} className="rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-white">Apply</button>
+              <div className="mt-10">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="PROMO CODE"
+                    value={voucherCode}
+                    onChange={(e) => setVoucherCode(e.target.value)}
+                    className="flex-1 border-b border-black dark:border-zinc-700 py-2 text-xs font-black outline-none bg-transparent"
+                  />
+                  <button onClick={applyVoucher} className="bg-black dark:bg-white dark:text-black text-white px-6 py-2 text-[10px] font-black uppercase tracking-widest hover:opacity-80">Apply</button>
+                </div>
+                {voucherError && <p className="mt-2 text-[9px] font-black text-red-600 uppercase">{voucherError}</p>}
               </div>
-              {voucherError && <p className="mt-2 text-sm text-[#c62828]">{voucherError}</p>}
-            </div>
 
-            <button
-              className="mt-8 w-full rounded-full bg-[#e53935] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#c62828]"
-              data-test="checkout-btn"
-              onClick={() => {
-                setShowConfetti(true);
-                setTimeout(() => {
-                  alert('Order placed successfully!');
-                  clearCart();
-                  setShowConfetti(false);
-                }, 500);
-              }}
-            >
-              Checkout
-            </button>
-            <button onClick={clearCart} className={`${isDarkMode ? 'mt-3 w-full rounded-full border border-[#35131f] px-5 py-3 text-sm font-semibold text-slate-300' : 'mt-3 w-full rounded-full border border-[#f2e8e8] px-5 py-3 text-sm font-semibold text-[#6b7280]'}`} data-test="clear-cart-btn">
-              Clear cart
-            </button>
+              <button 
+                className="mt-10 w-full bg-black dark:bg-white dark:text-black text-white py-5 text-xs font-black uppercase tracking-[0.3em] hover:opacity-80"
+                data-test="checkout-btn"
+                onClick={() => {
+                  setShowConfetti(true);
+                  setTimeout(() => {
+                    alert('Order placed successfully!');
+                    clearCart();
+                    setShowConfetti(false);
+                  }, 500);
+                }}
+              >
+                Secure Checkout
+              </button>
+              <button onClick={clearCart} className="mt-4 w-full text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-black dark:hover:text-white" data-test="clear-cart-btn">
+                Clear Bag
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -170,4 +172,5 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, isDarkMode
 };
 
 export default Cart;
+
 
