@@ -96,70 +96,76 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ addToCart, removeOneFro
           </div>
 
           <div className="mt-8 flex flex-col gap-6">
-            <p className="text-4xl font-black" data-test="detail-price">IDR {Math.round(product.price * 15000).toLocaleString()}</p>
-            <p className={`text-lg line-through text-slate-400`}>${(product.price * 1.2).toFixed(2)}</p>
+            <p className="text-4xl font-black">IDR {Math.round(product.price * 15000).toLocaleString()}</p>
+            <p className="text-sm font-bold uppercase tracking-widest text-zinc-400">Includes taxes & duties</p>
           </div>
 
-          <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4" data-test="detail-info-grid">
-            <div className={`rounded-[12px] p-3 bg-slate-100 text-slate-600`}>
-              <p className="text-xs">Product ID</p>
-              <p className="font-semibold">{product.id}</p>
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-0 border border-zinc-100" data-test="detail-info-grid">
+            <div className="p-6 border-r border-zinc-100 bg-zinc-50">
+              <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">Product ID</p>
+              <p className="font-bold">{product.id}</p>
             </div>
-            <div className={`rounded-[12px] p-3 bg-slate-50 text-slate-900`}>
-              <p className="text-xs">Selected quantity</p>
-              <p className="font-semibold">{productQuantity}</p>
+            <div className="p-6 border-r border-zinc-100">
+              <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">Selected</p>
+              <p className="font-bold">{productQuantity}</p>
             </div>
-            <div className={`rounded-[12px] p-3 bg-slate-100 text-slate-600`}>
-              <p className="text-xs">Subtotal</p>
-              <p className="font-semibold">${(productQuantity * product.price).toFixed(2)}</p>
+            <div className="p-6 bg-zinc-50">
+              <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">Subtotal</p>
+              <p className="font-bold">IDR {Math.round(productQuantity * product.price * 15000).toLocaleString()}</p>
             </div>
           </div>
 
-          <div className="mt-6 rounded-[24px] p-5 border border-slate-200 bg-slate-50">
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.35em] text-indigo-600">Product overview</h3>
-            <p className="mt-3 leading-7 text-slate-600" data-test="detail-description">{product.description}</p>
+          <div className="mt-8 border-t border-zinc-100 pt-8">
+            <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-black">Product description</h3>
+            <p className="mt-4 leading-7 text-zinc-600 text-sm" data-test="detail-description">{product.description}</p>
           </div>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row items-center">
-            <div className="flex items-center gap-2">
+          <div className="mt-12 flex flex-col gap-4 sm:flex-row items-stretch">
+            <div className="flex items-center border border-black bg-white h-14">
               <button
                 onClick={() => removeOneFromCart(product)}
                 disabled={productQuantity === 0}
-                className="rounded-full px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 bg-slate-100 text-slate-900 hover:bg-slate-200"
+                className="w-14 h-full text-lg font-bold hover:bg-zinc-50 transition disabled:opacity-20"
                 data-test="decrement-product-btn"
               >
                 −
               </button>
-              <span className={`min-w-[3rem] h-10 flex items-center justify-center rounded-full px-4 text-sm font-semibold badge-anim bg-slate-50 text-slate-900 border border-slate-200 ${badgePop ? 'pop' : ''}`}>{productQuantity}</span>
+              <span className="w-14 h-full flex items-center justify-center font-bold border-x border-zinc-100">{productQuantity}</span>
               <button
                 onClick={() => addToCart(product)}
-                className="rounded-full bg-indigo-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700"
+                className="w-14 h-full text-lg font-bold hover:bg-zinc-50 transition"
                 data-test="increment-detail-btn"
               >
                 +
               </button>
             </div>
             <button
+                onClick={() => addToCart(product)}
+                className="flex-1 bg-black text-white px-8 h-14 text-xs font-black uppercase tracking-[0.2em] transition hover:bg-zinc-800"
+            >
+                Add to Bag
+            </button>
+            <button
               onClick={() => { toggleFavorite(product); setHeartPop(true); setTimeout(() => setHeartPop(false), 260); }}
-              className={`rounded-full px-4 py-3 transition heart-pop ${heartPop ? 'pop' : ''} ${favorites.includes(product.id) ? 'bg-indigo-50 text-indigo-600 border border-indigo-200' : 'border border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+              className={`w-14 h-14 border border-zinc-200 flex items-center justify-center transition-all ${favorites.includes(product.id) ? 'bg-red-50 text-red-600 border-red-100' : 'text-zinc-400 hover:text-black hover:border-black'}`}
               data-test="detail-favorite-btn"
             >
               <span className="material-icons">{favorites.includes(product.id) ? 'favorite' : 'favorite_border'}</span>
             </button>
           </div>
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-[20px] bg-[#fff7ed] p-4 text-center text-sm text-[#6b7280]">
-              <span className="material-icons mb-2 text-[#e53935]">local_shipping</span>
-              <p className="font-semibold text-[#111111]">Fast delivery</p>
+          <div className="mt-12 grid gap-0 sm:grid-cols-3 border border-zinc-100">
+            <div className="p-6 border-r border-zinc-100 flex flex-col items-center text-center">
+              <span className="material-icons mb-3 text-zinc-900">local_shipping</span>
+              <p className="text-[10px] font-black uppercase tracking-widest">Free Shipping</p>
             </div>
-            <div className="rounded-[20px] bg-[#fff7ed] p-4 text-center text-sm text-[#6b7280]">
-              <span className="material-icons mb-2 text-[#e53935]">verified</span>
-              <p className="font-semibold text-[#111111]">Authentic</p>
+            <div className="p-6 border-r border-zinc-100 flex flex-col items-center text-center">
+              <span className="material-icons mb-3 text-zinc-900">verified</span>
+              <p className="text-[10px] font-black uppercase tracking-widest">100% Authentic</p>
             </div>
-            <div className="rounded-[20px] bg-[#fff7ed] p-4 text-center text-sm text-[#6b7280]">
-              <span className="material-icons mb-2 text-[#e53935]">history</span>
-              <p className="font-semibold text-[#111111]">Easy returns</p>
+            <div className="p-6 flex flex-col items-center text-center">
+              <span className="material-icons mb-3 text-zinc-900">history</span>
+              <p className="text-[10px] font-black uppercase tracking-widest">30-Day Returns</p>
             </div>
           </div>
         </div>
