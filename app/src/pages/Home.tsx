@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import ProductCard from '../components/ProductCard';
 import MysteryBox from '../components/MysteryBox';
+import WhatsAppChat from '../components/WhatsAppChat';
 import { Product } from '../types';
 
 interface HomeProps {
@@ -116,9 +117,9 @@ const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorit
   }, []);
 
   return (
-    <div className="mx-auto max-w-7xl p-4 md:p-8">
-      <header className={`mb-10 overflow-hidden relative min-h-[400px] flex items-center transition-all duration-1000 ${slides[activeSlide].color} text-white`}>
-        <div className="flex flex-col md:flex-row w-full h-full">
+    <div className="w-full">
+      <header className={`mb-10 overflow-hidden relative min-h-[500px] flex items-center transition-all duration-1000 ${slides[activeSlide].color} text-white`}>
+        <div className="mx-auto max-w-7xl flex flex-col md:flex-row w-full h-full px-4 md:px-8">
           <div className="flex-1 p-8 md:p-16 flex flex-col justify-center z-10">
             <p key={`tag-${activeSlide}`} className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 animate-slide-up">
               {slides[activeSlide].tag}
@@ -130,7 +131,7 @@ const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorit
               {slides[activeSlide].desc}
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-6">
-              <button className="bg-white text-black px-10 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 transition shadow-xl">
+              <button className="bg-white text-black px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 transition shadow-xl active:scale-95">
                 Shop the Sale
               </button>
               <div key={`discount-${activeSlide}`} className="discount-tag animate-shimmer px-8 py-4 text-2xl font-black italic tracking-tighter animate-discount-pop flex flex-col items-start leading-none">
@@ -145,8 +146,8 @@ const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorit
                 <span className="text-[180px] font-black uppercase rotate-90 tracking-widest">MALSTRO</span>
              </div>
              {/* Animated floating elements */}
-             <div className="absolute top-1/4 right-1/4 w-32 h-32 border-4 border-white/5 animate-float"></div>
-             <div className="absolute bottom-1/4 left-1/4 w-48 h-48 border border-white/10 animate-float" style={{ animationDelay: '1s' }}></div>
+             <div className="absolute top-1/4 right-1/4 w-32 h-32 border-4 border-white/5 animate-float rounded-full"></div>
+             <div className="absolute bottom-1/4 left-1/4 w-48 h-48 border border-white/10 animate-float rounded-full" style={{ animationDelay: '1s' }}></div>
           </div>
         </div>
 
@@ -155,13 +156,14 @@ const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorit
            {slides.map((_, i) => (
              <div 
                key={i} 
-               className={`h-1 transition-all duration-500 ${i === activeSlide ? 'w-12 bg-white' : 'w-4 bg-white/20'}`}
+               className={`h-1 rounded-full transition-all duration-500 ${i === activeSlide ? 'w-12 bg-white' : 'w-4 bg-white/20'}`}
              />
            ))}
         </div>
       </header>
 
-      <div className="mb-12 flex flex-wrap items-center justify-between gap-6 border-b border-zinc-200 dark:border-zinc-800 pb-8">
+      <div className="mx-auto max-w-7xl p-4 md:p-8">
+        <div className="mb-12 flex flex-wrap items-center justify-between gap-6 border-b border-zinc-200 dark:border-zinc-800 pb-8">
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setSelectedCategory('all')}
@@ -247,6 +249,7 @@ const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorit
         </div>
       </footer>
       <MysteryBox />
+      <WhatsAppChat />
     </div>
   );
 };
