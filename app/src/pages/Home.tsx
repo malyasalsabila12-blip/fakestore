@@ -202,9 +202,17 @@ const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorit
       </div>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center min-h-[40vh]" data-test="loading">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-black mb-4"></div>
-          <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Curating collection...</p>
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-test="loading">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="flex flex-col space-y-4">
+              <div className="aspect-[4/5] w-full animate-pulse bg-zinc-100 rounded-3xl"></div>
+              <div className="space-y-2 px-2">
+                <div className="h-3 w-20 animate-pulse bg-zinc-100 rounded"></div>
+                <div className="h-4 w-full animate-pulse bg-zinc-100 rounded"></div>
+                <div className="h-4 w-24 animate-pulse bg-zinc-100 rounded"></div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : error ? (
         <div className="text-center mt-20 text-red-600 p-4" data-test="error-state">
