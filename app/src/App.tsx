@@ -10,12 +10,21 @@ import Profile from './pages/Profile';
 import LoyaltyInfo from './pages/LoyaltyInfo';
 import SlideOverCart from './components/SlideOverCart';
 import ScrollToTop from './components/ScrollToTop';
-import { Product } from './types';
+import { Product, User } from './types';
 import './App.css';
 
 function App() {
   const [cart, setCart] = useState<Product[]>([]);
-  const [user, setUser] = useState<string | null>(localStorage.getItem('user'));
+  const [user, setUser] = useState<User | null>(() => {
+    const savedUser = localStorage.getItem('user');
+    if (!savedUser) return null;
+    try {
+      return JSON.parse(savedUser);
+    } catch {
+      // For backward compatibility if it was a plain string
+      return { id: 1, username: savedUser, email: `${savedUser}@example.com` };
+    }
+  });
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   useEffect(() => {
@@ -64,9 +73,9 @@ function App() {
     setCart([]);
   };
 
-  const handleLogin = (username: string) => {
-    setUser(username);
-    localStorage.setItem('user', username);
+  const handleLogin = (newUser: User) => {
+    setUser(newUser);
+    localStorage.setItem('user', JSON.stringify(newUser));
   };
 
   const handleLogout = () => {
@@ -75,8 +84,11 @@ function App() {
   };
 
   const handleUpdateUsername = (newUsername: string) => {
-    setUser(newUsername);
-    localStorage.setItem('user', newUsername);
+    if (user) {
+      const updatedUser = { ...user, username: newUsername };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
   };
 
   const MainContent = () => {
@@ -89,7 +101,7 @@ function App() {
         {user && (
           <Navbar 
             cartCount={cart.length} 
-            username={user} 
+            username={user.username} 
             onOpenCart={() => setIsCartOpen(true)}
           />
         )}
@@ -105,7 +117,7 @@ function App() {
             />
             <Route 
               path="/profile" 
-              element={user ? <Profile username={user} onLogout={handleLogout} onUpdateUsername={handleUpdateUsername} /> : <Navigate to="/login" />} 
+              element={user ? <Profile user={user} onLogout={handleLogout} onUpdateUsername={handleUpdateUsername} /> : <Navigate to="/login" />} 
             />
             <Route 
               path="/loyalty" 

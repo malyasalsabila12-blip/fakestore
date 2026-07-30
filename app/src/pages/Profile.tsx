@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { User } from '../types';
+
 interface Address {
   id: string;
   label: string;
@@ -12,27 +14,27 @@ interface Address {
 }
 
 interface ProfileProps {
-  username: string;
+  user: User;
   onLogout: () => void;
   onUpdateUsername: (newUsername: string) => void;
 }
 
-const Profile: React.FC<ProfileProps> = ({ username, onLogout, onUpdateUsername }) => {
+const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'wishlist' | 'addresses'>('profile');
   const [isEditing, setIsEditing] = useState(false);
-  const [editUsername, setEditUsername] = useState(username);
+  const [editUsername, setEditUsername] = useState(user.username);
   const [showAddressForm, setShowAddressForm] = useState(false);
 
   useEffect(() => {
-    setEditUsername(username);
-  }, [username]);
+    setEditUsername(user.username);
+  }, [user.username]);
 
   const [addresses, setAddresses] = useState<Address[]>([
     {
       id: '1',
       label: 'Home',
-      fullName: 'Malya Salsabila',
+      fullName: `${user.firstName} ${user.lastName}`.trim() || user.username,
       street: 'Jl. Kemang Raya No. 10',
       city: 'Jakarta Selatan',
       postalCode: '12730',
@@ -260,6 +262,14 @@ const Profile: React.FC<ProfileProps> = ({ username, onLogout, onUpdateUsername 
             <div className="space-y-8">
               <div className="grid gap-6 md:grid-cols-2">
                 <div>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500">First Name</label>
+                  <p className="mt-1 text-lg font-bold text-black">{user.firstName || '-'}</p>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500">Last Name</label>
+                  <p className="mt-1 text-lg font-bold text-black">{user.lastName || '-'}</p>
+                </div>
+                <div>
                   <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500">Username</label>
                   {isEditing ? (
                     <input
@@ -270,12 +280,16 @@ const Profile: React.FC<ProfileProps> = ({ username, onLogout, onUpdateUsername 
                       autoFocus
                     />
                   ) : (
-                    <p className="mt-1 text-lg font-bold text-black">{username}</p>
+                    <p className="mt-1 text-lg font-bold text-black">{user.username}</p>
                   )}
                 </div>
                 <div>
                   <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500">Email Address</label>
-                  <p className="mt-1 text-lg font-bold text-black">{username}@example.com</p>
+                  <p className="mt-1 text-lg font-bold text-black">{user.email}</p>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500">Phone Number</label>
+                  <p className="mt-1 text-lg font-bold text-black">{user.phone || '-'}</p>
                 </div>
               </div>
 

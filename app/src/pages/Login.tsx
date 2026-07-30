@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
+import { User } from '../types';
+
 interface LoginProps {
-  onLogin: (username: string) => void;
+  onLogin: (user: User) => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
@@ -20,7 +22,14 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
     try {
       if ((username === 'malyasqa' || username === 'harfymalya@gmail.com') && password === 'serverqa123') {
-        onLogin(username);
+        onLogin({
+          id: 1,
+          username: 'malyasqa',
+          email: 'harfymalya@gmail.com',
+          firstName: 'Malya',
+          lastName: 'Salsabila',
+          phone: '+62 876 3456 5767'
+        });
         navigate('/');
         return;
       }
@@ -35,7 +44,14 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       });
 
       if (response.ok) {
-        onLogin(username);
+        onLogin({
+          id: Date.now(),
+          username: username,
+          email: `${username}@example.com`,
+          firstName: username,
+          lastName: '',
+          phone: ''
+        });
         navigate('/');
       } else {
         setError('Invalid username or password (try: malya / serverqa123)');
