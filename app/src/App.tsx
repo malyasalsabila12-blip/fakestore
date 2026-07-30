@@ -6,6 +6,8 @@ import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+import Profile from './pages/Profile';
+import LoyaltyInfo from './pages/LoyaltyInfo';
 import SlideOverCart from './components/SlideOverCart';
 import ScrollToTop from './components/ScrollToTop';
 import { Product } from './types';
@@ -72,6 +74,11 @@ function App() {
     localStorage.removeItem('user');
   };
 
+  const handleUpdateUsername = (newUsername: string) => {
+    setUser(newUsername);
+    localStorage.setItem('user', newUsername);
+  };
+
   const MainContent = () => {
     const location = useLocation();
     const isAuthRoute = location.pathname === '/login' || location.pathname === '/signup';
@@ -82,7 +89,6 @@ function App() {
         {user && (
           <Navbar 
             cartCount={cart.length} 
-            onLogout={handleLogout} 
             username={user} 
             onOpenCart={() => setIsCartOpen(true)}
           />
@@ -96,6 +102,14 @@ function App() {
             <Route 
               path="/signup" 
               element={!user ? <SignUp /> : <Navigate to="/" />} 
+            />
+            <Route 
+              path="/profile" 
+              element={user ? <Profile username={user} onLogout={handleLogout} onUpdateUsername={handleUpdateUsername} /> : <Navigate to="/login" />} 
+            />
+            <Route 
+              path="/loyalty" 
+              element={user ? <LoyaltyInfo /> : <Navigate to="/login" />} 
             />
             <Route 
               path="/" 
