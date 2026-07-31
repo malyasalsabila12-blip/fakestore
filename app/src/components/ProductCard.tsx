@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Product } from '../types';
-import { getFallbackImage } from '../utils';
+import { getProductImage, getFallbackImage } from '../utils';
 
 interface ProductCardProps {
   product: Product;
@@ -51,7 +51,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart, removeOne
       <div className={`mb-4 flex items-center justify-center p-4 bg-white`}>
         <Link to={`/product/${product.id}`} className="w-full flex items-center justify-center" data-test="product-link">
           <img 
-            src={`https://res.cloudinary.com/demo/image/fetch/f_auto,q_auto,w_400/${product.image}`} 
+            src={getProductImage(product.image, product.category)} 
             alt={product.title} 
             className="h-48 w-full object-contain mix-blend-multiply" 
             data-test="product-image"

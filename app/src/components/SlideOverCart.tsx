@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Product } from '../types';
-import { getFallbackImage } from '../utils';
+import { getProductImage, getFallbackImage } from '../utils';
 
 interface SlideOverCartProps {
   isOpen: boolean;
@@ -46,7 +46,7 @@ const SlideOverCart: React.FC<SlideOverCartProps> = ({ isOpen, cart, onClose, re
               {cart.map((item, index) => (
                 <div key={`${item.id}-${index}`} className="flex items-center gap-4 border border-zinc-100 p-4 bg-white">
                   <img 
-                    src={`https://res.cloudinary.com/demo/image/fetch/f_auto,q_auto,w_150,h_150,c_pad,b_white/${item.image}`} 
+                    src={getProductImage(item.image, item.category)} 
                     alt={item.title} 
                     className="h-16 w-16 object-contain mix-blend-multiply bg-white p-2" 
                     onError={(e) => {

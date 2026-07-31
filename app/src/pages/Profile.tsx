@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { User, Order } from '../types';
-import { getFallbackImage } from '../utils';
+import { getProductImage, getFallbackImage } from '../utils';
 
 interface Address {
   id: string;
@@ -241,7 +241,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
                           {order.items.slice(0, 5).map((item, idx) => (
                              <img 
                                 key={idx} 
-                                src={`https://res.cloudinary.com/demo/image/fetch/f_auto,q_auto,w_100,h_100,c_pad,b_white/${item.image}`} 
+                                src={getProductImage(item.image, item.category)} 
                                 alt={item.title} 
                                 className="h-12 w-12 rounded-full border-2 border-white object-contain bg-white shadow-sm" 
                                 onError={(e) => {
@@ -315,7 +315,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
                           <div key={idx} className="flex gap-4 items-center">
                             <div className="h-16 w-16 border border-zinc-100 p-2 shrink-0">
                                <img 
-                                src={`https://res.cloudinary.com/demo/image/fetch/f_auto,q_auto,w_150,h_150,c_pad,b_white/${item.image}`} 
+                                src={getProductImage(item.image, item.category)} 
                                 alt={item.title} 
                                 className="h-full w-full object-contain" 
                                 onError={(e) => {

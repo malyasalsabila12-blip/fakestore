@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Confetti from '../components/Confetti';
 import { Product } from '../types';
-import { getFallbackImage } from '../utils';
+import { getProductImage, getFallbackImage } from '../utils';
 
 interface CartProps {
   cart: Product[];
@@ -97,7 +97,7 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart }) => {
               {cart.map((item, index) => (
                 <div key={`${item.id}-${index}`} className={`flex items-center gap-6 border p-6 border-zinc-200 bg-white`}>
                   <img 
-                    src={`https://res.cloudinary.com/demo/image/fetch/f_auto,q_auto,w_200,h_200,c_pad,b_white/${item.image}`} 
+                    src={getProductImage(item.image, item.category)} 
                     alt={item.title} 
                     className="h-24 w-24 object-contain mix-blend-multiply bg-white p-2" 
                     onError={(e) => {
