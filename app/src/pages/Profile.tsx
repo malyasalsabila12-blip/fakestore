@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { User, Order } from '../types';
-import { getProductImage, getFallbackImage } from '../utils';
 
 interface Address {
   id: string;
@@ -241,12 +240,9 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
                           {order.items.slice(0, 5).map((item, idx) => (
                              <img 
                                 key={idx} 
-                                src={getProductImage(item.image, item.category, item.id, item.title)} 
+                                src={item.image} 
                                 alt={item.title} 
                                 className="h-12 w-12 rounded-full border-2 border-white object-contain bg-white shadow-sm" 
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src = getFallbackImage(item.category, item.id, item.title);
-                                }}
                              />
                           ))}
                           {order.items.length > 5 && (
@@ -263,7 +259,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
                             onClick={() => setSelectedOrder(order)}
                             className="text-[10px] font-black uppercase tracking-widest text-black border-2 border-black px-4 py-2 hover:bg-black hover:text-white transition-colors"
                           >
-                             View Details
+                             VIEW DETAILS
                           </button>
                        </div>
                     </div>
@@ -311,21 +307,28 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
                     <div className="space-y-4">
                       <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-100 pb-2">Products</p>
                       <div className="space-y-4">
-                        {selectedOrder.items.map((item, idx) => (
+                        {Object.values(selectedOrder.items.reduce((acc: any, item) => {
+                          if (!acc[item.id]) acc[item.id] = { ...item, quantity: 0 };
+                          acc[item.id].quantity += 1;
+                          return acc;
+                        }, {})).map((item: any, idx) => (
                           <div key={idx} className="flex gap-4 items-center">
-                            <div className="h-16 w-16 border border-zinc-100 p-2 shrink-0">
+                            <div className="h-16 w-16 border border-zinc-100 p-2 shrink-0 bg-white">
                                <img 
-                                src={getProductImage(item.image, item.category, item.id, item.title)} 
-                                alt={item.title} 
-                                className="h-full w-full object-contain" 
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src = getFallbackImage(item.category, item.id, item.title);
-                                }}
+                                 src={item.image} 
+                                 alt={item.title} 
+                                 className="h-full w-full object-contain" 
+                                 onError={(e) => {
+                                   (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Product';
+                                 }}
                                />
                             </div>
                             <div className="min-w-0 flex-1">
                                <p className="text-xs font-black uppercase tracking-tight truncate">{item.title}</p>
-                               <p className="text-[10px] font-black text-zinc-500 mt-1">IDR {Math.round(item.price * 15000).toLocaleString()}</p>
+                               <div className="flex items-center gap-3 mt-1">
+                                  <p className="text-[10px] font-black text-zinc-500">IDR {Math.round(item.price * 15000).toLocaleString()}</p>
+                                  <span className="text-[10px] font-black bg-zinc-100 px-2 py-0.5">x{item.quantity}</span>
+                               </div>
                             </div>
                           </div>
                         ))}
@@ -385,7 +388,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
                   <button 
                     onClick={() => {
                       setIsEditing(false);
-                      setEditUsername(username);
+                      setEditUsername(user.username);
                     }}
                     className="rounded-full border border-black bg-white px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-black transition-all hover:bg-zinc-50 active:scale-95"
                   >

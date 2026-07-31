@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Confetti from '../components/Confetti';
 import { Product } from '../types';
-import { getProductImage, getFallbackImage } from '../utils';
 
 interface CartProps {
   cart: Product[];
@@ -96,14 +95,7 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart }) => {
             <div className="space-y-4">
               {cart.map((item, index) => (
                 <div key={`${item.id}-${index}`} className={`flex items-center gap-6 border p-6 border-zinc-200 bg-white`}>
-                  <img 
-                    src={getProductImage(item.image, item.category, item.id, item.title)} 
-                    alt={item.title} 
-                    className="h-24 w-24 object-contain bg-white p-2" 
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = getFallbackImage(item.category, item.id, item.title);
-                    }}
-                  />
+                  <img src={item.image} alt={item.title} className="h-24 w-24 object-contain mix-blend-multiply bg-white p-2" />
                   <div className="min-w-0 flex-1">
                     <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{item.category}</p>
                     <h3 className="mt-1 text-sm font-black uppercase tracking-tight truncate">{item.title}</h3>
