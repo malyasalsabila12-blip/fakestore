@@ -44,7 +44,7 @@ const SlideOverCart: React.FC<SlideOverCartProps> = ({ isOpen, cart, onClose, re
             <div className="space-y-6">
               {cart.map((item, index) => (
                 <div key={`${item.id}-${index}`} className="flex items-center gap-4 border border-zinc-100 p-4 bg-white">
-                  <img src={item.image} alt={item.title} className="h-16 w-16 object-contain mix-blend-multiply bg-white p-2" />
+                  <img src={item.image} alt={item.title} referrerPolicy="no-referrer" className="h-16 w-16 object-contain mix-blend-multiply bg-white p-2" />
                   <div className="min-w-0 flex-1 text-black">
                     <p className="truncate text-xs font-black uppercase tracking-tight">{item.title}</p>
                     <p className="mt-1 text-xs font-black">IDR {Math.round(item.price * 15000).toLocaleString()}</p>

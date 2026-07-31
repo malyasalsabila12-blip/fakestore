@@ -52,6 +52,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart, removeOne
           <img 
             src={product.image} 
             alt={product.title} 
+            referrerPolicy="no-referrer"
             className="h-48 w-full object-contain mix-blend-multiply" 
             data-test="product-image"
             onError={(e) => {

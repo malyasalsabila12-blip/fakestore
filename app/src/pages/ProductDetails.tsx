@@ -110,6 +110,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ addToCart, removeOneFro
           <img 
             src={product.image} 
             alt={product.title} 
+            referrerPolicy="no-referrer"
             className="h-full w-full object-contain mix-blend-multiply transition-transform duration-700 group-hover:scale-105" 
             data-test="detail-image" 
           />

@@ -242,6 +242,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
                                 key={idx} 
                                 src={item.image} 
                                 alt={item.title} 
+                                referrerPolicy="no-referrer"
                                 className="h-12 w-12 rounded-full border-2 border-white object-contain bg-white shadow-sm" 
                              />
                           ))}
@@ -310,7 +311,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
                         {selectedOrder.items.map((item, idx) => (
                           <div key={idx} className="flex gap-4 items-center">
                             <div className="h-16 w-16 border border-zinc-100 p-2 shrink-0">
-                               <img src={item.image} alt={item.title} className="h-full w-full object-contain" />
+                               <img src={item.image} alt={item.title} referrerPolicy="no-referrer" className="h-full w-full object-contain" />
                             </div>
                             <div className="min-w-0 flex-1">
                                <p className="text-xs font-black uppercase tracking-tight truncate">{item.title}</p>

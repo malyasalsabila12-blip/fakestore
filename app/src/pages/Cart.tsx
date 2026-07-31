@@ -95,7 +95,7 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart }) => {
             <div className="space-y-4">
               {cart.map((item, index) => (
                 <div key={`${item.id}-${index}`} className={`flex items-center gap-6 border p-6 border-zinc-200 bg-white`}>
-                  <img src={item.image} alt={item.title} className="h-24 w-24 object-contain mix-blend-multiply bg-white p-2" />
+                  <img src={item.image} alt={item.title} referrerPolicy="no-referrer" className="h-24 w-24 object-contain mix-blend-multiply bg-white p-2" />
                   <div className="min-w-0 flex-1">
                     <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{item.category}</p>
                     <h3 className="mt-1 text-sm font-black uppercase tracking-tight truncate">{item.title}</h3>
