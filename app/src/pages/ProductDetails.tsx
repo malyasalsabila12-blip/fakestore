@@ -109,12 +109,12 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ addToCart, removeOneFro
         {/* Product Image */}
         <div className="relative aspect-square overflow-hidden rounded-[2rem] bg-zinc-50 p-12 transition-all duration-500 hover:shadow-2xl group">
           <img 
-            src={getProductImage(product.image, product.category)} 
+            src={getProductImage(product.image, product.category, product.id, product.title)} 
             alt={product.title} 
-            className="h-full w-full object-contain mix-blend-multiply transition-transform duration-700 group-hover:scale-105" 
+            className="h-full w-full object-contain transition-transform duration-700 group-hover:scale-105" 
             data-test="detail-image" 
             onError={(e) => {
-              (e.target as HTMLImageElement).src = getFallbackImage(product.category);
+              (e.target as HTMLImageElement).src = getFallbackImage(product.category, product.id, product.title);
             }}
           />
           <button

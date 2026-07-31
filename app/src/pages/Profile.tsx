@@ -241,11 +241,11 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
                           {order.items.slice(0, 5).map((item, idx) => (
                              <img 
                                 key={idx} 
-                                src={getProductImage(item.image, item.category)} 
+                                src={getProductImage(item.image, item.category, item.id, item.title)} 
                                 alt={item.title} 
                                 className="h-12 w-12 rounded-full border-2 border-white object-contain bg-white shadow-sm" 
                                 onError={(e) => {
-                                  (e.target as HTMLImageElement).src = getFallbackImage(item.category);
+                                  (e.target as HTMLImageElement).src = getFallbackImage(item.category, item.id, item.title);
                                 }}
                              />
                           ))}
@@ -315,11 +315,11 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
                           <div key={idx} className="flex gap-4 items-center">
                             <div className="h-16 w-16 border border-zinc-100 p-2 shrink-0">
                                <img 
-                                src={getProductImage(item.image, item.category)} 
+                                src={getProductImage(item.image, item.category, item.id, item.title)} 
                                 alt={item.title} 
                                 className="h-full w-full object-contain" 
                                 onError={(e) => {
-                                  (e.target as HTMLImageElement).src = getFallbackImage(item.category);
+                                  (e.target as HTMLImageElement).src = getFallbackImage(item.category, item.id, item.title);
                                 }}
                                />
                             </div>

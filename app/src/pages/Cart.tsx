@@ -97,11 +97,11 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart }) => {
               {cart.map((item, index) => (
                 <div key={`${item.id}-${index}`} className={`flex items-center gap-6 border p-6 border-zinc-200 bg-white`}>
                   <img 
-                    src={getProductImage(item.image, item.category)} 
+                    src={getProductImage(item.image, item.category, item.id, item.title)} 
                     alt={item.title} 
-                    className="h-24 w-24 object-contain mix-blend-multiply bg-white p-2" 
+                    className="h-24 w-24 object-contain bg-white p-2" 
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = getFallbackImage(item.category);
+                      (e.target as HTMLImageElement).src = getFallbackImage(item.category, item.id, item.title);
                     }}
                   />
                   <div className="min-w-0 flex-1">

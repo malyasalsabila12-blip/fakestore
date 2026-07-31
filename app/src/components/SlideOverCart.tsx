@@ -46,11 +46,11 @@ const SlideOverCart: React.FC<SlideOverCartProps> = ({ isOpen, cart, onClose, re
               {cart.map((item, index) => (
                 <div key={`${item.id}-${index}`} className="flex items-center gap-4 border border-zinc-100 p-4 bg-white">
                   <img 
-                    src={getProductImage(item.image, item.category)} 
+                    src={getProductImage(item.image, item.category, item.id, item.title)} 
                     alt={item.title} 
-                    className="h-16 w-16 object-contain mix-blend-multiply bg-white p-2" 
+                    className="h-16 w-16 object-contain bg-white p-2" 
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = getFallbackImage(item.category);
+                      (e.target as HTMLImageElement).src = getFallbackImage(item.category, item.id, item.title);
                     }}
                   />
                   <div className="min-w-0 flex-1 text-black">
