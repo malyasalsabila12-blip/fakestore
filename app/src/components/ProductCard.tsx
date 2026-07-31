@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Product } from '../types';
+import { getFallbackImage } from '../utils';
 
 interface ProductCardProps {
   product: Product;
@@ -50,13 +51,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart, removeOne
       <div className={`mb-4 flex items-center justify-center p-4 bg-white`}>
         <Link to={`/product/${product.id}`} className="w-full flex items-center justify-center" data-test="product-link">
           <img 
-            src={product.image} 
+            src={`https://res.cloudinary.com/demo/image/fetch/f_auto,q_auto,w_400/${product.image}`} 
             alt={product.title} 
-            referrerPolicy="no-referrer"
             className="h-48 w-full object-contain mix-blend-multiply" 
             data-test="product-image"
             onError={(e) => {
-              (e.target as HTMLImageElement).src = 'https://placehold.co/400x400?text=Image+Not+Found';
+              (e.target as HTMLImageElement).src = getFallbackImage(product.category);
             }}
           />
         </Link>

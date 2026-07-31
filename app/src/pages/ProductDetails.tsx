@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Product } from '../types';
+import { getFallbackImage } from '../utils';
 
 interface ProductDetailsProps {
   addToCart: (product: Product) => void;
@@ -108,11 +109,13 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ addToCart, removeOneFro
         {/* Product Image */}
         <div className="relative aspect-square overflow-hidden rounded-[2rem] bg-zinc-50 p-12 transition-all duration-500 hover:shadow-2xl group">
           <img 
-            src={product.image} 
+            src={`https://res.cloudinary.com/demo/image/fetch/f_auto,q_auto,w_800/${product.image}`} 
             alt={product.title} 
-            referrerPolicy="no-referrer"
             className="h-full w-full object-contain mix-blend-multiply transition-transform duration-700 group-hover:scale-105" 
             data-test="detail-image" 
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = getFallbackImage(product.category);
+            }}
           />
           <button
             onClick={() => { toggleFavorite(product); setHeartPop(true); setTimeout(() => setHeartPop(false), 260); }}

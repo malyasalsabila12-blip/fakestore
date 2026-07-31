@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { User, Order } from '../types';
+import { getFallbackImage } from '../utils';
 
 interface Address {
   id: string;
@@ -240,10 +241,12 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
                           {order.items.slice(0, 5).map((item, idx) => (
                              <img 
                                 key={idx} 
-                                src={item.image} 
+                                src={`https://res.cloudinary.com/demo/image/fetch/f_auto,q_auto,w_100,h_100,c_pad,b_white/${item.image}`} 
                                 alt={item.title} 
-                                referrerPolicy="no-referrer"
                                 className="h-12 w-12 rounded-full border-2 border-white object-contain bg-white shadow-sm" 
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = getFallbackImage(item.category);
+                                }}
                              />
                           ))}
                           {order.items.length > 5 && (
@@ -311,7 +314,14 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
                         {selectedOrder.items.map((item, idx) => (
                           <div key={idx} className="flex gap-4 items-center">
                             <div className="h-16 w-16 border border-zinc-100 p-2 shrink-0">
-                               <img src={item.image} alt={item.title} referrerPolicy="no-referrer" className="h-full w-full object-contain" />
+                               <img 
+                                src={`https://res.cloudinary.com/demo/image/fetch/f_auto,q_auto,w_150,h_150,c_pad,b_white/${item.image}`} 
+                                alt={item.title} 
+                                className="h-full w-full object-contain" 
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = getFallbackImage(item.category);
+                                }}
+                               />
                             </div>
                             <div className="min-w-0 flex-1">
                                <p className="text-xs font-black uppercase tracking-tight truncate">{item.title}</p>
