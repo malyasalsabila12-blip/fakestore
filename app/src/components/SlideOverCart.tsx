@@ -21,7 +21,7 @@ const SlideOverCart: React.FC<SlideOverCartProps> = ({ isOpen, cart, onClose, re
       />
 
       <aside
-        className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'} bg-white text-black shadow-2xl`}
+        className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col transition-all duration-300 ${isOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'} bg-white text-black shadow-2xl`}
       >
         <div className="flex items-center justify-between border-b border-zinc-200 px-6 py-6">
           <div>

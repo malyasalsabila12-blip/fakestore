@@ -8,13 +8,20 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Profile from './pages/Profile';
 import LoyaltyInfo from './pages/LoyaltyInfo';
+import Payment from './pages/Payment';
 import SlideOverCart from './components/SlideOverCart';
 import ScrollToTop from './components/ScrollToTop';
-import { Product, User } from './types';
+import { Product, User, Order } from './types';
 import './App.css';
 
 function App() {
-  const [cart, setCart] = useState<Product[]>([]);
+  const [cart, setCart] = useState<Product[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('cart') || '[]');
+    } catch {
+      return [];
+    }
+  });
   const [user, setUser] = useState<User | null>(() => {
     const savedUser = localStorage.getItem('user');
     if (!savedUser) return null;
@@ -26,6 +33,21 @@ function App() {
     }
   });
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [orders, setOrders] = useState<Order[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('orders') || '[]');
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
+
+  useEffect(() => {
+    localStorage.setItem('orders', JSON.stringify(orders));
+  }, [orders]);
 
   useEffect(() => {
     document.documentElement.classList.remove('dark');
@@ -73,6 +95,10 @@ function App() {
     setCart([]);
   };
 
+  const addOrder = (order: Order) => {
+    setOrders(prev => [order, ...prev]);
+  };
+
   const handleLogin = (newUser: User) => {
     setUser(newUser);
     localStorage.setItem('user', JSON.stringify(newUser));
@@ -117,7 +143,7 @@ function App() {
             />
             <Route 
               path="/profile" 
-              element={user ? <Profile user={user} onLogout={handleLogout} onUpdateUsername={handleUpdateUsername} /> : <Navigate to="/login" />} 
+              element={user ? <Profile user={user} onLogout={handleLogout} onUpdateUsername={handleUpdateUsername} orders={orders} /> : <Navigate to="/login" />} 
             />
             <Route 
               path="/loyalty" 
@@ -134,6 +160,10 @@ function App() {
             <Route 
               path="/cart" 
               element={user ? <Cart cart={cart} removeFromCart={removeFromCart} clearCart={clearCart} /> : <Navigate to="/login" />} 
+            />
+            <Route 
+              path="/payment" 
+              element={user ? <Payment clearCart={clearCart} addOrder={addOrder} cart={cart} /> : <Navigate to="/login" />} 
             />
           </Routes>
         </main>

@@ -19,3 +19,12 @@ export interface User {
   lastName?: string;
   phone?: string;
 }
+
+export interface Order {
+  id: string;
+  date: string;
+  total: number;
+  items: Product[];
+  status: 'completed' | 'pending' | 'processing' | 'cancelled';
+  paymentMethod: string;
+}

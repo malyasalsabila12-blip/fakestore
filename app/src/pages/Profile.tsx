@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { User } from '../types';
+import { User, Order } from '../types';
 
 interface Address {
   id: string;
@@ -17,9 +17,10 @@ interface ProfileProps {
   user: User;
   onLogout: () => void;
   onUpdateUsername: (newUsername: string) => void;
+  orders: Order[];
 }
 
-const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername }) => {
+const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, orders }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'wishlist' | 'addresses'>('profile');
   const [isEditing, setIsEditing] = useState(false);
@@ -196,18 +197,72 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername }) =
         );
       case 'orders':
         return (
-          <div>
-            <h2 className="mb-6 text-xl font-black uppercase tracking-widest text-black">Recent Orders</h2>
-            <div className="rounded-2xl border border-dashed border-zinc-200 p-12 text-center">
-              <span className="material-icons text-4xl text-zinc-300">shopping_cart</span>
-              <p className="mt-4 text-sm font-medium text-zinc-500">You haven't placed any orders yet.</p>
-              <button 
-                onClick={() => navigate('/')}
-                className="mt-6 text-xs font-black uppercase tracking-widest text-black underline underline-offset-4"
-              >
-                Start Shopping
-              </button>
-            </div>
+          <div className="space-y-8">
+            <h2 className="text-xl font-black uppercase tracking-widest text-black">Order History</h2>
+            {orders.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-zinc-200 p-12 text-center bg-white">
+                <span className="material-icons text-4xl text-zinc-300">shopping_cart</span>
+                <p className="mt-4 text-sm font-medium text-zinc-500">You haven't placed any orders yet.</p>
+                <button 
+                  onClick={() => navigate('/')}
+                  className="mt-6 text-xs font-black uppercase tracking-widest text-black underline underline-offset-4"
+                >
+                  Start Shopping
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {orders.map((order) => (
+                  <div key={order.id} className="border border-zinc-200 bg-white overflow-hidden hover:border-black transition-colors">
+                    <div className="p-6 border-b border-zinc-100 bg-zinc-50/50 flex flex-wrap items-center justify-between gap-4">
+                      <div className="flex gap-8">
+                        <div>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Order ID</p>
+                          <p className="text-xs font-black uppercase">{order.id}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Date</p>
+                          <p className="text-xs font-black uppercase">{new Date(order.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Total</p>
+                          <p className="text-xs font-black uppercase">IDR {order.total.toLocaleString()}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-green-600">{order.status}</span>
+                      </div>
+                    </div>
+                    <div className="p-6">
+                       <div className="flex -space-x-4 overflow-hidden mb-4">
+                          {order.items.slice(0, 5).map((item, idx) => (
+                             <img 
+                                key={idx} 
+                                src={item.image} 
+                                alt={item.title} 
+                                className="h-12 w-12 rounded-full border-2 border-white object-contain bg-white shadow-sm" 
+                             />
+                          ))}
+                          {order.items.length > 5 && (
+                             <div className="h-12 w-12 rounded-full border-2 border-white bg-zinc-100 flex items-center justify-center text-[10px] font-black">
+                                +{order.items.length - 5}
+                             </div>
+                          )}
+                       </div>
+                       <div className="flex items-center justify-between">
+                          <p className="text-xs font-black uppercase tracking-widest text-zinc-500">
+                             {order.items.length} item{order.items.length > 1 ? 's' : ''} via {order.paymentMethod}
+                          </p>
+                          <button className="text-[10px] font-black uppercase tracking-widest text-black underline underline-offset-4">
+                             View Details
+                          </button>
+                       </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         );
       case 'wishlist':

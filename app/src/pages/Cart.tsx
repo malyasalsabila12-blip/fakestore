@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Confetti from '../components/Confetti';
 import { Product } from '../types';
 
@@ -10,6 +10,7 @@ interface CartProps {
 }
 
 const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart }) => {
+  const navigate = useNavigate();
   const [voucherCode, setVoucherCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState<{ code: string; amount: number; type: 'percent' | 'flat' } | null>(null);
   const [voucherError, setVoucherError] = useState('');
@@ -147,17 +148,13 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart }) => {
               </div>
 
               <button 
-                className="mt-10 w-full bg-black dark:bg-white dark:text-black text-white py-5 text-xs font-black uppercase tracking-[0.3em] hover:opacity-80"
+                className="mt-10 w-full bg-black dark:bg-white dark:text-black text-white py-5 text-xs font-black uppercase tracking-[0.3em] hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors flex items-center justify-center gap-3 group"
                 data-test="checkout-btn"
                 onClick={() => {
-                  setShowConfetti(true);
-                  setTimeout(() => {
-                    alert('Order placed successfully!');
-                    clearCart();
-                    setShowConfetti(false);
-                  }, 500);
+                  navigate('/payment', { state: { total: Math.round(parseFloat(finalTotal) * 15000) } });
                 }}
               >
+                <span className="material-icons text-sm group-hover:scale-110 transition-transform">lock</span>
                 Secure Checkout
               </button>
               <button onClick={clearCart} className="mt-4 w-full text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-black dark:hover:text-white" data-test="clear-cart-btn">
