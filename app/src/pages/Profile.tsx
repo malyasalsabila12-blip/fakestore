@@ -26,6 +26,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
   const [isEditing, setIsEditing] = useState(false);
   const [editUsername, setEditUsername] = useState(user.username);
   const [showAddressForm, setShowAddressForm] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
     setEditUsername(user.username);
@@ -254,13 +255,89 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
                           <p className="text-xs font-black uppercase tracking-widest text-zinc-500">
                              {order.items.length} item{order.items.length > 1 ? 's' : ''} via {order.paymentMethod}
                           </p>
-                          <button className="text-[10px] font-black uppercase tracking-widest text-black underline underline-offset-4">
+                          <button 
+                            onClick={() => setSelectedOrder(order)}
+                            className="text-[10px] font-black uppercase tracking-widest text-black border-2 border-black px-4 py-2 hover:bg-black hover:text-white transition-colors"
+                          >
                              View Details
                           </button>
                        </div>
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* Order Details Modal/Overlay */}
+            {selectedOrder && (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+                <div className="w-full max-w-2xl bg-white border-4 border-black shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] overflow-hidden animate-in zoom-in-95 duration-300">
+                  <div className="border-b-4 border-black p-6 flex items-center justify-between bg-zinc-50">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Order Detail</p>
+                      <h3 className="text-xl font-black uppercase tracking-tight">{selectedOrder.id}</h3>
+                    </div>
+                    <button 
+                      onClick={() => setSelectedOrder(null)}
+                      className="h-10 w-10 border-2 border-black flex items-center justify-center hover:bg-black hover:text-white transition-colors"
+                    >
+                      <span className="material-icons">close</span>
+                    </button>
+                  </div>
+                  
+                  <div className="p-8 max-h-[60vh] overflow-y-auto space-y-8">
+                    <div className="grid gap-6 md:grid-cols-2 text-[10px] font-black uppercase tracking-widest">
+                       <div className="space-y-1">
+                          <p className="text-zinc-400">Status</p>
+                          <p className="text-green-600 flex items-center gap-2">
+                             <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                             {selectedOrder.status}
+                          </p>
+                       </div>
+                       <div className="space-y-1">
+                          <p className="text-zinc-400">Payment Method</p>
+                          <p>{selectedOrder.paymentMethod}</p>
+                       </div>
+                       <div className="space-y-1">
+                          <p className="text-zinc-400">Order Date</p>
+                          <p>{new Date(selectedOrder.date).toLocaleString('en-GB')}</p>
+                       </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-100 pb-2">Products</p>
+                      <div className="space-y-4">
+                        {selectedOrder.items.map((item, idx) => (
+                          <div key={idx} className="flex gap-4 items-center">
+                            <div className="h-16 w-16 border border-zinc-100 p-2 shrink-0">
+                               <img src={item.image} alt={item.title} className="h-full w-full object-contain" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                               <p className="text-xs font-black uppercase tracking-tight truncate">{item.title}</p>
+                               <p className="text-[10px] font-black text-zinc-500 mt-1">IDR {Math.round(item.price * 15000).toLocaleString()}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t-4 border-black p-8 bg-zinc-50 flex items-center justify-between">
+                    <div>
+                       <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Total Amount Paid</p>
+                       <p className="text-2xl font-black mt-1">IDR {selectedOrder.total.toLocaleString()}</p>
+                    </div>
+                    <button 
+                      onClick={() => {
+                        alert('Invoice downloaded!');
+                      }}
+                      className="bg-black text-white px-8 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-all flex items-center gap-2"
+                    >
+                      <span className="material-icons text-sm">download</span>
+                      Download Invoice
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>

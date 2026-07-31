@@ -35,7 +35,26 @@ function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [orders, setOrders] = useState<Order[]>(() => {
     try {
-      return JSON.parse(localStorage.getItem('orders') || '[]');
+      const savedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+      if (savedOrders.length === 0) {
+        return [{
+          id: 'MAL-827364',
+          date: new Date(Date.now() - 86400000).toISOString(),
+          total: 1649250,
+          items: [{
+            id: 1,
+            title: "Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops",
+            price: 109.95,
+            description: "Your perfect pack for everyday use and walks in the forest. Stash your laptop (up to 15 inches) in the padded sleeve, your everyday",
+            category: "men's clothing",
+            image: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg",
+            rating: { rate: 3.9, count: 120 }
+          }],
+          status: 'completed',
+          paymentMethod: 'Credit / Debit Card'
+        }];
+      }
+      return savedOrders;
     } catch {
       return [];
     }
