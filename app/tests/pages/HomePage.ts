@@ -44,4 +44,8 @@ export class HomePage {
   async openProductDetails(index: number = 0) {
     await this.page.locator('[data-test="product-link"]').nth(index).click();
   }
+
+  async navigateToProfile() {
+    await this.page.locator('[data-test="profile-link"]').click();
+  }
 }

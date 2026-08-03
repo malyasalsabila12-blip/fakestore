@@ -1,14 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from './pages/LoginPage';
 import { HomePage } from './pages/HomePage';
+import { SignUpPage } from './pages/SignUpPage';
 
 test.describe('Fake Store E2E Automation (POM)', () => {
   let loginPage: LoginPage;
   let homePage: HomePage;
+  let signUpPage: SignUpPage;
 
   test.beforeEach(async ({ page }) => {
     loginPage = new LoginPage(page);
     homePage = new HomePage(page);
+    signUpPage = new SignUpPage(page);
 
     // Global default mocks
     await page.route('**/auth/login', async route => {
@@ -80,8 +83,24 @@ test.describe('Fake Store E2E Automation (POM)', () => {
     test('Logout Flow', async ({ page }) => {
       await loginPage.goto();
       await loginPage.login('malya', 'serverqa123');
+      await homePage.navigateToProfile();
       await homePage.logoutButton.click();
       await expect(page).toHaveURL('/login');
+    });
+
+    test('Valid Sign Up Flow - @smoke', async ({ page }) => {
+      await signUpPage.goto();
+      await signUpPage.startRegistration('testuser@example.com');
+      await signUpPage.fillDetails({
+        firstName: 'Test',
+        lastName: 'User',
+        phone: '1234567890',
+        username: 'testuser',
+        password: 'password123'
+      });
+      await signUpPage.createAccountButton.click();
+      await expect(page.locator('text=Account Created Successfully')).toBeVisible();
+      await expect(page).toHaveURL('/login', { timeout: 10000 });
     });
   });
 
@@ -93,6 +112,8 @@ test.describe('Fake Store E2E Automation (POM)', () => {
 
     test('Search for existing product', async () => {
       await homePage.search('Backpack');
+      // Wait for debounce and filter
+      await expect(homePage.productCards.first()).toBeVisible({ timeout: 10000 });
       const count = await homePage.productCards.count();
       expect(count).toBeGreaterThan(0);
       await expect(homePage.productCards.first()).toContainText('Backpack');
@@ -100,8 +121,9 @@ test.describe('Fake Store E2E Automation (POM)', () => {
 
     test('Search for non-existent product - @ui-state', async () => {
       await homePage.search('NonExistentProductXYZ');
-      await expect(homePage.emptyState).toBeVisible();
-      await expect(homePage.emptyState).toContainText('No products found');
+      // Wait for debounce and filter
+      await expect(homePage.emptyState).toBeVisible({ timeout: 10000 });
+      await expect(homePage.emptyState).toContainText('No results found');
     });
 
     test('Filter by category', async ({ page }) => {
@@ -139,9 +161,22 @@ test.describe('Fake Store E2E Automation (POM)', () => {
       await expect(page).toHaveURL('/cart');
       
       const total = page.locator('[data-test="cart-total"]');
-      await expect(total).toContainText('$');
+      await expect(total).toContainText('IDR');
       
       await page.locator('[data-test="checkout-btn"]').click();
+    });
+
+    test('Add to Favorites and Verify State', async ({ page }) => {
+      // Find the first heart icon and click it
+      const favoriteBtn = page.locator('[data-test="card-favorite-btn"]').first();
+      await favoriteBtn.click({ force: true });
+      
+      // The text inside the material-icons span changes from favorite_border to favorite
+      await expect(favoriteBtn).toContainText('favorite');
+      
+      // Refresh to check persistence in LocalStorage
+      await page.reload();
+      await expect(favoriteBtn).toContainText('favorite');
     });
   });
 

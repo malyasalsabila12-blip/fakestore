@@ -116,7 +116,7 @@ const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorit
   }, []);
 
   return (
-    <div className="w-full">
+    <div className="w-full" data-test="home-title">
       <header className={`mb-12 overflow-hidden relative min-h-[500px] flex items-center transition-all duration-1000 ${slides[activeSlide].color} text-white`}>
         <div className="mx-auto max-w-7xl w-full flex flex-col md:flex-row h-full">
           <div className="flex-1 p-8 md:p-16 flex flex-col justify-center z-10">
@@ -163,7 +163,7 @@ const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorit
 
       <div className="mx-auto max-w-7xl p-4 md:p-8">
         <div className="mb-12 flex flex-wrap items-center justify-between gap-6 border-b border-zinc-200 dark:border-zinc-800 pb-8">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2" data-test="category-filters">
           <button
             onClick={() => setSelectedCategory('all')}
             className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest transition border ${
@@ -171,6 +171,7 @@ const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorit
                 ? 'bg-black text-white border-black'
                 : 'bg-white text-black border-zinc-200 hover:border-black'
             }`}
+            data-test="category-all"
           >
             All
           </button>
@@ -197,8 +198,11 @@ const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorit
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className={`w-full border-b border-black py-2 text-sm outline-none bg-transparent`}
+            data-test="search-input"
           />
-          <span className="material-icons absolute right-0 top-2 text-lg">search</span>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute right-0 top-2 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
         </div>
       </div>
 

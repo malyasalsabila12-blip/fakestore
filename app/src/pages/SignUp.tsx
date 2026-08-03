@@ -64,11 +64,13 @@ const SignUp: React.FC<SignUpProps> = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="malyasqa@gmail.com"
+                      data-test="signup-email-input"
                     />
                   </div>
                   <button
                     type="submit"
                     className="w-full mt-6 bg-[#F0F2F5] rounded-full px-4 py-4 text-sm font-bold text-black transition hover:opacity-90"
+                    data-test="signup-continue-btn"
                   >
                     Continue
                   </button>
@@ -116,6 +118,7 @@ const SignUp: React.FC<SignUpProps> = () => {
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         placeholder="malya"
+                        data-test="first-name-input"
                       />
                   </div>
                   <div className="space-y-1">
@@ -126,13 +129,14 @@ const SignUp: React.FC<SignUpProps> = () => {
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         placeholder="salsabila"
+                        data-test="last-name-input"
                       />
                   </div>
                 </div>
 
                 <div className="flex gap-4">
                   <div className="w-1/4 relative">
-                    <select className={`w-full border p-3 text-sm outline-none bg-transparent rounded-lg appearance-none border-zinc-200 text-black pr-8`}>
+                    <select className={`w-full border p-3 text-sm outline-none bg-transparent rounded-lg appearance-none border-zinc-200 text-black pr-8`} data-test="country-code-select">
                       <option>+62</option>
                     </select>
                     <span className="material-icons absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">expand_more</span>
@@ -144,6 +148,7 @@ const SignUp: React.FC<SignUpProps> = () => {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="876 3456 5767"
+                      data-test="phone-input"
                     />
                   </div>
                 </div>
@@ -157,6 +162,7 @@ const SignUp: React.FC<SignUpProps> = () => {
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       placeholder="malyasqa"
+                      data-test="signup-username-input"
                     />
                   </div>
                   <div className="space-y-1 relative">
@@ -167,6 +173,7 @@ const SignUp: React.FC<SignUpProps> = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="serverqa123"
+                      data-test="signup-password-input"
                     />
                     <button
                       type="button"
@@ -188,6 +195,7 @@ const SignUp: React.FC<SignUpProps> = () => {
                       checked={agreedToTerms}
                       onChange={(e) => setAgreedToTerms(e.target.checked)}
                       required
+                      data-test="terms-checkbox"
                     />
                     <label htmlFor="terms" className="text-[12px] leading-relaxed text-zinc-600">
                       I agree to the Malstro, and how my personal data may be collected, used, and processed by Malstro as set out in the Privacy Policy.
@@ -226,6 +234,7 @@ const SignUp: React.FC<SignUpProps> = () => {
                     type="submit"
                     disabled={loading || !agreedToTerms}
                     className="w-full mt-6 bg-black rounded-full px-4 py-4 text-sm font-bold text-white transition hover:opacity-90 disabled:opacity-50"
+                    data-test="create-account-btn"
                 >
                     {loading ? 'Processing...' : 'Create Account'}
                 </button>

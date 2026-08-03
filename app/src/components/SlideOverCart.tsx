@@ -29,14 +29,18 @@ const SlideOverCart: React.FC<SlideOverCartProps> = ({ isOpen, cart, onClose, re
             <h2 className="text-lg font-black uppercase tracking-widest">{cart.length} item{cart.length === 1 ? '' : 's'}</h2>
           </div>
           <button onClick={onClose} className="p-2 transition hover:opacity-50" aria-label="Close cart">
-            <span className="material-icons">close</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-8">
           {cart.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center border border-dashed border-zinc-200 p-8 text-center">
-              <span className="material-icons text-5xl text-zinc-200">shopping_basket</span>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
               <h3 className="mt-4 text-xs font-black uppercase tracking-widest text-black">Your bag is empty</h3>
               <p className="mt-2 text-[9px] font-black uppercase tracking-widest text-zinc-500">Add a few favorites to see them here.</p>
             </div>
@@ -50,7 +54,9 @@ const SlideOverCart: React.FC<SlideOverCartProps> = ({ isOpen, cart, onClose, re
                     <p className="mt-1 text-xs font-black">IDR {Math.round(item.price * 15000).toLocaleString()}</p>
                   </div>
                   <button onClick={() => removeFromCart(index)} className="p-2 hover:text-red-600 transition">
-                    <span className="material-icons text-base">delete_outline</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
                   </button>
                 </div>
               ))}

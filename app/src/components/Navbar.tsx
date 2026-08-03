@@ -43,7 +43,9 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount, username, onOpenCart }) => {
 
         <div className="hidden flex-1 items-center justify-center md:flex max-w-2xl">
           <div className="relative w-full group">
-            <span className="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-black transition-colors">search</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-black transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
             <input 
               type="text" 
               placeholder="Search products, brands and more..." 
@@ -55,10 +57,12 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount, username, onOpenCart }) => {
         <div className="flex items-center gap-6">
           <button 
             onClick={onOpenCart} 
-            className="group relative flex items-center transition hover:opacity-70" 
+            className="group relative flex items-center transition hover:opacity-70 bg-transparent border-none shadow-none" 
             data-test="nav-cart"
           >
-            <span className="material-icons text-2xl">shopping_bag</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
             {cartCount > 0 && (
               <span className="absolute -right-1.5 -top-1.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-red-600 text-[8px] font-black text-white ring-2 ring-white group-hover:scale-110 transition-transform" data-test="cart-count">
                 {cartCount}
@@ -74,8 +78,10 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount, username, onOpenCart }) => {
               <span className="text-[10px] font-black uppercase tracking-widest leading-none">Account</span>
               <span className="text-[9px] text-zinc-500 font-bold leading-tight">{username}</span>
             </div>
-            <div className="h-10 w-10 rounded-full border border-zinc-100 flex items-center justify-center group-hover:border-black transition-colors overflow-hidden bg-zinc-50">
-              <span className="material-icons text-xl">person_outline</span>
+            <div className="flex items-center justify-center transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
             </div>
           </Link>
         </div>

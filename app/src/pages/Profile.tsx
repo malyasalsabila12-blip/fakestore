@@ -515,6 +515,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
               <button 
                 onClick={handleLogout}
                 className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50"
+                data-test="logout-btn"
               >
                 <span className="material-icons text-xl">logout</span>
                 Sign Out

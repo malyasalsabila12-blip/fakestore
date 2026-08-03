@@ -41,11 +41,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart, removeOne
     >
       <button
         onClick={() => { toggleFavorite(product); setHeartPop(true); setTimeout(() => setHeartPop(false), 260); }}
-        className={`absolute top-3 right-3 z-20 p-2 bg-white/90 border border-zinc-200 focus:outline-none heart-pop ${heartPop ? 'pop' : ''}`}
+        className={`absolute top-3 right-3 z-20 focus:outline-none heart-pop ${heartPop ? 'pop' : ''}`}
         aria-label="Toggle favorite"
         data-test="card-favorite-btn"
       >
-        <span className="material-icons text-base">{favorites.includes(product.id) ? 'favorite' : 'favorite_border'}</span>
+        <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${favorites.includes(product.id) ? 'fill-red-600 stroke-red-600' : 'stroke-black'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
       </button>
       <div className={`mb-4 flex items-center justify-center p-4 bg-white`}>
         <Link to={`/product/${product.id}`} className="w-full flex items-center justify-center" data-test="product-link">

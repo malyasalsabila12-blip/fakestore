@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import Confetti from '../components/Confetti';
-import { Product, Order } from '../types';
+import { Product, Order, User } from '../types';
 
 interface PaymentProps {
   clearCart: () => void;
   addOrder: (order: Order) => void;
   cart: Product[];
+  user: User | null;
 }
 
 type PaymentMethod = 'card' | 'ewallet' | 'qris' | 'va' | 'paylater' | 'transfer' | 'cod' | 'retail';
 
-const Payment: React.FC<PaymentProps> = ({ clearCart, addOrder, cart }) => {
+const Payment: React.FC<PaymentProps> = ({ clearCart, addOrder, cart, user }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { total } = location.state || { total: 0 };
@@ -52,8 +54,38 @@ const Payment: React.FC<PaymentProps> = ({ clearCart, addOrder, cart }) => {
     { id: 'cod', label: 'Cash on Delivery', icon: 'local_shipping', group: 'Cash' },
   ];
 
+  const handleXenditCheckout = async () => {
+    setIsProcessing(true);
+    try {
+      const response = await axios.post('http://localhost:3001/api/create-invoice', {
+        amount: Math.round(total),
+        payerEmail: user?.email || 'customer@example.com',
+        description: `Malstro Order for ${user?.username || 'Guest'}`,
+        externalID: `MAL-${Date.now()}`
+      });
+
+      if (response.data.invoice_url) {
+        window.location.href = response.data.invoice_url;
+      } else {
+        throw new Error('Failed to get invoice URL');
+      }
+    } catch (error: any) {
+      console.error('Payment Error:', error);
+      const errorMsg = error.response?.data?.details?.message || error.message || 'Failed to initialize payment.';
+      alert(`Payment Error: ${errorMsg}\n\nPlease check if your Xendit API Key has "Invoices: Write" permission enabled in the Dashboard.`);
+      setIsProcessing(false);
+    }
+  };
+
   const handlePayment = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const xenditMethods = ['card', 'va', 'ewallet', 'qris', 'paylater', 'retail'];
+    if (xenditMethods.includes(selectedMethod)) {
+      handleXenditCheckout();
+      return;
+    }
+
     setIsProcessing(true);
     
     setTimeout(() => {
@@ -80,170 +112,30 @@ const Payment: React.FC<PaymentProps> = ({ clearCart, addOrder, cart }) => {
   };
 
   const renderPaymentForm = () => {
+    const isXenditMethod = ['card', 'va', 'ewallet', 'qris', 'paylater', 'retail'].includes(selectedMethod);
+    
+    if (isXenditMethod) {
+      return (
+        <div className="bg-zinc-50 border border-zinc-200 p-10 text-center space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="mx-auto w-16 h-16 bg-white rounded-full flex items-center justify-center border border-zinc-100 shadow-sm">
+            <span className="material-icons text-3xl">payments</span>
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-xs font-black uppercase tracking-widest">Secure Checkout</h3>
+            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 leading-relaxed max-w-[280px] mx-auto">
+              You will be redirected to Xendit's secure payment gateway to complete your purchase using {paymentMethods.find(m => m.id === selectedMethod)?.label}.
+            </p>
+          </div>
+          <div className="flex justify-center gap-4 opacity-50 grayscale scale-75">
+             <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6" />
+             <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4 mt-1" />
+             <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg" alt="GoPay" className="h-4 mt-1" />
+          </div>
+        </div>
+      );
+    }
+
     switch (selectedMethod) {
-      case 'card':
-        return (
-          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <div className="border border-black p-4 bg-zinc-50 mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Sandbox Mode</span>
-                <button 
-                  type="button"
-                  onClick={() => {
-                    setName('malya salsabila');
-                    setCardNumber('6512 3214 7274 9087');
-                    setExpiry('08/29');
-                    setCvv('333');
-                  }}
-                  className="text-[9px] font-black uppercase tracking-widest bg-black text-white px-3 py-1 hover:bg-zinc-800 transition"
-                >
-                  Fill Demo Card
-                </button>
-              </div>
-              <p className="text-[10px] font-black uppercase tracking-widest leading-tight">
-                malya salsabila | 6512 3214 7274 9087 | 08/29 | 333
-              </p>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1 block">Cardholder Name</label>
-                <input
-                  required
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="MALYA SALSABILA"
-                  className="w-full border border-zinc-200 p-4 text-sm font-black outline-none bg-white focus:border-black uppercase transition-colors"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1 block">Card Number</label>
-                <input
-                  required
-                  type="text"
-                  maxLength={19}
-                  value={cardNumber}
-                  onChange={(e) => setCardNumber(e.target.value.replace(/\W/gi, '').replace(/(.{4})/g, '$1 ').trim())}
-                  placeholder="0000 0000 0000 0000"
-                  className="w-full border border-zinc-200 p-4 text-sm font-black outline-none bg-white focus:border-black transition-colors"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1 block">Expiry Date</label>
-                  <input
-                    required
-                    type="text"
-                    maxLength={5}
-                    value={expiry}
-                    onChange={(e) => setExpiry(e.target.value)}
-                    placeholder="MM/YY"
-                    className="w-full border border-zinc-200 p-4 text-sm font-black outline-none bg-white focus:border-black transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1 block">CVV</label>
-                  <input
-                    required
-                    type="password"
-                    maxLength={3}
-                    value={cvv}
-                    onChange={(e) => setCvv(e.target.value)}
-                    placeholder="***"
-                    className="w-full border border-zinc-200 p-4 text-sm font-black outline-none bg-white focus:border-black transition-colors"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      case 'ewallet':
-        const wallets = [
-          { id: 'gopay', name: 'GoPay', logo: 'https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg' },
-          { id: 'shopeepay', name: 'ShopeePay', logo: 'https://product.shopeepay.com/static/images/logo/shopeepay-logo.svg' },
-          { id: 'dana', name: 'DANA', logo: 'https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg' },
-          { id: 'ovo', name: 'OVO', logo: 'https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo_ovo_purple.svg' }
-        ];
-        return (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <div className="grid grid-cols-2 gap-3">
-              {wallets.map(wallet => (
-                <button key={wallet.id} type="button" className="border border-zinc-200 p-6 flex flex-col items-center justify-center gap-3 hover:border-black transition group relative overflow-hidden bg-zinc-50">
-                   <div className="absolute top-0 right-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="material-icons text-xs">check_circle</span>
-                   </div>
-                  <img src={wallet.logo} alt={wallet.name} className="h-6 w-auto object-contain grayscale group-hover:grayscale-0 transition-all" />
-                  <span className="text-[9px] font-black uppercase tracking-widest">{wallet.name}</span>
-                </button>
-              ))}
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Phone Number linked to E-Wallet</label>
-              <input
-                required
-                type="tel"
-                placeholder="08XX-XXXX-XXXX"
-                className="w-full border border-zinc-200 p-4 text-sm font-black outline-none bg-white focus:border-black transition-colors"
-              />
-            </div>
-          </div>
-        );
-      case 'qris':
-        return (
-          <div className="text-center space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300 py-4">
-            <div className="mx-auto w-64 h-64 bg-white border border-black p-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-              <img src="/qris-demo.svg" alt="QRIS Code" className="w-full h-full object-contain" />
-            </div>
-            <div className="space-y-3">
-              <p className="text-[11px] font-black uppercase tracking-widest leading-relaxed">
-                Scan QRIS with your preferred payment app
-              </p>
-              <div className="flex justify-center gap-6 opacity-30 grayscale items-center">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg" alt="GoPay" className="h-3" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg" alt="DANA" className="h-3" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo_ovo_purple.svg" alt="OVO" className="h-3" />
-              </div>
-            </div>
-          </div>
-        );
-      case 'va':
-        const banks = [
-          { id: 'bca', name: 'BCA', logo: 'https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg' },
-          { id: 'mandiri', name: 'Mandiri', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg' },
-          { id: 'bni', name: 'BNI', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/f0/Bank_Negara_Indonesia_logo_%282004%29.svg' },
-          { id: 'bri', name: 'BRI', logo: 'https://upload.wikimedia.org/wikipedia/commons/6/68/BANK_BRI_logo.svg' }
-        ];
-        return (
-          <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            {banks.map(bank => (
-              <button key={bank.id} type="button" className="w-full border border-zinc-200 p-5 flex justify-between items-center hover:border-black transition group bg-zinc-50">
-                <div className="flex items-center gap-6">
-                  <img src={bank.logo} alt={bank.name} className="h-4 w-auto object-contain grayscale group-hover:grayscale-0 transition-all" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">{bank.name} Virtual Account</span>
-                </div>
-                <span className="material-icons text-sm opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
-              </button>
-            ))}
-          </div>
-        );
-      case 'paylater':
-        const paylaterApps = [
-          { id: 'akulaku', name: 'Akulaku', logo: 'https://cdn.jsdelivr.net/npm/idn-finlogos@2/dist/icons/akulaku.svg' },
-          { id: 'kredivo', name: 'Kredivo', logo: 'https://cdn.jsdelivr.net/npm/idn-finlogos@2/dist/icons/kredivo.svg' }
-        ];
-        return (
-          <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            {paylaterApps.map(app => (
-              <button key={app.id} type="button" className="w-full border border-zinc-200 p-5 flex justify-between items-center hover:border-black transition group bg-zinc-50">
-                <div className="flex items-center gap-6">
-                  <img src={app.logo} alt={app.name} className="h-4 w-auto object-contain grayscale group-hover:grayscale-0 transition-all" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">{app.name} Paylater</span>
-                </div>
-                <span className="material-icons text-sm opacity-0 group-hover:opacity-100 transition-opacity">open_in_new</span>
-              </button>
-            ))}
-          </div>
-        );
       case 'transfer':
         return (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">

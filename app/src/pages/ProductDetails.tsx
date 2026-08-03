@@ -115,10 +115,12 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ addToCart, removeOneFro
           />
           <button
             onClick={() => { toggleFavorite(product); setHeartPop(true); setTimeout(() => setHeartPop(false), 260); }}
-            className={`absolute right-8 top-8 flex h-12 w-12 items-center justify-center rounded-full border bg-white/80 backdrop-blur-md transition-all duration-300 ${favorites.includes(product.id) ? 'border-red-100 text-red-600 shadow-lg shadow-red-200/50' : 'border-zinc-100 text-zinc-400 hover:border-black hover:text-black shadow-sm'} ${heartPop ? 'scale-110' : ''}`}
+            className={`absolute right-8 top-8 flex h-12 w-12 items-center justify-center transition-all duration-300 ${favorites.includes(product.id) ? 'text-red-600' : 'text-zinc-400 hover:text-black'} ${heartPop ? 'scale-110' : ''}`}
             data-test="detail-favorite-btn"
           >
-            <span className="material-icons">{favorites.includes(product.id) ? 'favorite' : 'favorite_border'}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className={`h-8 w-8 ${favorites.includes(product.id) ? 'fill-red-600 stroke-red-600' : 'stroke-currentColor'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
           </button>
         </div>
 

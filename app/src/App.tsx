@@ -182,7 +182,7 @@ function App() {
             />
             <Route 
               path="/payment" 
-              element={user ? <Payment clearCart={clearCart} addOrder={addOrder} cart={cart} /> : <Navigate to="/login" />} 
+              element={user ? <Payment clearCart={clearCart} addOrder={addOrder} cart={cart} user={user} /> : <Navigate to="/login" />} 
             />
           </Routes>
         </main>

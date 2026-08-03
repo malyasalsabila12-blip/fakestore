@@ -69,7 +69,9 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart }) => {
         {cart.length === 0 ? (
         <div className={`border border-zinc-200 p-20 text-center bg-white`} data-test="empty-cart-msg">
           <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center">
-            <span className="material-icons text-6xl text-zinc-200">shopping_basket</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
           </div>
           <h2 className="text-xl font-black uppercase tracking-widest">Your bag is empty</h2>
           <p className="mt-2 text-xs font-black uppercase tracking-widest text-zinc-500">Add a few favorites to see them here.</p>
@@ -102,7 +104,9 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart }) => {
                     <p className="mt-2 text-sm font-black">IDR {Math.round(item.price * 15000).toLocaleString()}</p>
                   </div>
                   <button onClick={() => removeFromCart(index)} className="p-2 hover:text-red-600 transition">
-                    <span className="material-icons">delete_outline</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
                   </button>
                 </div>
               ))}
