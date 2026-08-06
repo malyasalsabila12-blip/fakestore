@@ -34,7 +34,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart, removeOne
 
   return (
     <div 
-      className={`flex h-full flex-col overflow-hidden border p-4 transition-all duration-300 hover:shadow-xl border-zinc-200 bg-white text-black`} 
+      className={`relative flex h-full flex-col overflow-hidden border p-4 transition-all duration-300 hover:shadow-xl border-zinc-200 bg-white text-black`} 
       data-test={`product-card-${product.id}`}
       draggable
       onDragStart={handleDragStart}
@@ -72,18 +72,37 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart, removeOne
           <span className="ml-1">(120)</span>
         </div>
       </div>
-      <div className="mt-4 flex flex-col gap-3">
-        <p className="text-base font-black" data-test="product-price">IDR {Math.round(product.price * 15000).toLocaleString()}</p>
+      <div className="mt-auto pt-6 flex flex-col gap-4">
+        <p className="text-lg font-black text-black" data-test="product-price">IDR {Math.round(product.price * 15000).toLocaleString()}</p>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => addToCart(product)}
-            className="flex-1 bg-black text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest transition hover:bg-zinc-800 focus:outline-none"
-            data-test="increment-product-btn"
-          >
-            Add to Bag
-          </button>
-          {productQuantity > 0 && (
-            <span className="flex h-8 w-8 items-center justify-center border border-black text-xs font-bold">{productQuantity}</span>
+          {productQuantity === 0 ? (
+            <button
+              onClick={() => addToCart(product)}
+              className="flex-1 bg-black text-white px-6 py-4 text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:bg-zinc-800 focus:outline-none rounded-full shadow-xl shadow-black/20 hover:scale-[1.02] active:scale-[0.98]"
+              data-test="add-to-cart-btn"
+            >
+              Add to Cart
+            </button>
+          ) : (
+            <div className="flex flex-1 h-11 items-center justify-between bg-zinc-100 rounded-full px-6 border border-transparent">
+              <button
+                onClick={() => removeOneFromCart(product)}
+                className="text-xl font-light text-zinc-400 hover:text-black transition-colors"
+                data-test="decrement-product-btn"
+                aria-label="Remove one"
+              >
+                −
+              </button>
+              <span className="text-sm font-black text-black" data-test="product-quantity">{productQuantity}</span>
+              <button
+                onClick={() => addToCart(product)}
+                className="text-xl font-light text-black hover:opacity-70 transition-opacity"
+                data-test="increment-product-btn"
+                aria-label="Add one"
+              >
+                +
+              </button>
+            </div>
           )}
         </div>
       </div>

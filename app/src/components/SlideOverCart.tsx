@@ -76,10 +76,10 @@ const SlideOverCart: React.FC<SlideOverCartProps> = ({ isOpen, cart, onClose, re
             <Link 
               to="/cart" 
               onClick={onClose} 
-              className="flex-1 bg-black text-white px-4 py-4 text-center text-[10px] font-black uppercase tracking-widest transition hover:bg-zinc-800"
+              className="flex-2 bg-black text-white px-4 py-4 text-center text-[10px] font-black uppercase tracking-widest transition hover:bg-zinc-800"
               data-test="slideover-checkout"
             >
-              Go to Bag
+              Checkout — IDR {Math.round(subtotal * 15000).toLocaleString()}
             </Link>
           </div>
         </div>

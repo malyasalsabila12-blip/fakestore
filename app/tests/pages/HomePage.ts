@@ -36,7 +36,8 @@ export class HomePage {
   }
 
   async addToCart(index: number = 0) {
-    const btn = this.page.locator('[data-test="increment-product-btn"]').nth(index);
+    const card = this.page.locator('[data-test^="product-card-"]').nth(index);
+    const btn = card.locator('[data-test="add-to-cart-btn"]');
     await expect(btn).toBeVisible({ timeout: 15000 });
     await btn.click();
   }

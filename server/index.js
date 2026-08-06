@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const Xendit = require('xendit-node');
+const axios = require('axios');
 
 dotenv.config();
 
@@ -9,44 +9,77 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const x = new Xendit({
-  secretKey: process.env.XENDIT_SECRET_KEY || 'xnd_development_...',
-});
-
-const i = new x.Invoice();
+const XENDIT_SECRET_KEY = (process.env.XENDIT_SECRET_KEY || '').trim();
 
 // Test endpoint
 app.get('/api/test', (req, res) => {
   res.json({ status: 'ok', message: 'Server is running' });
 });
 
-// Endpoint to create a Xendit Invoice
-app.post('/api/create-invoice', async (req, res) => {
-  console.log('Received create-invoice request:', req.body);
+// Endpoint to create a Xendit Checkout Session (Modern UI)
+app.post('/api/checkout', async (req, res) => {
+  console.log('Received checkout request:', req.body);
   try {
-    const { amount, payerEmail, description, externalID } = req.body;
+    const { amount, payerEmail, description, externalID, successUrl, failureUrl, items } = req.body;
 
     if (!amount || amount <= 0) {
       return res.status(400).json({ error: 'Invalid amount' });
     }
 
-    const result = await i.createInvoice({
-      externalID: externalID || `MAL-${Date.now()}`,
-      amount: amount,
-      payerEmail: payerEmail,
-      description: description || "Payment for Malstro Order",
-      shouldSendEmail: true,
-      successRedirectURL: "http://localhost:5173/profile",
-      failureRedirectURL: "http://localhost:5173/payment",
-    });
+    const authHeader = Buffer.from(`${XENDIT_SECRET_KEY}:`).toString('base64');
+    
+    // Xendit Checkout Sessions V2 REQUIRES HTTPS URLs. 
+    // We force conversion to https for everything to satisfy the API validator.
+    const fixUrl = (url) => {
+      if (!url) return null;
+      return url.replace('http://', 'https://');
+    };
 
-    console.log('Xendit Invoice Created:', result.invoice_url);
-    res.json({ invoice_url: result.invoice_url });
+    const origin = req.get('origin') || 'http://localhost:5173';
+
+    // Using Xendit Invoices API (V1/V2) instead of Sessions (V2)
+    // The Invoices API is much more lenient with localhost/http for development
+    const payload = {
+      external_id: externalID || `MAL-${Date.now()}`,
+      amount: amount,
+      payer_email: payerEmail,
+      description: description,
+      success_redirect_url: `${origin}/profile`,
+      failure_redirect_url: `${origin}/cart`,
+      currency: 'IDR'
+    };
+
+    if (items && items.length > 0) {
+      payload.items = items.map(item => ({
+        name: item.title,
+        quantity: item.quantity || 1,
+        price: Math.round(item.price * 15000),
+        category: item.category || 'General'
+      }));
+    }
+
+    const response = await axios.post(
+      'https://api.xendit.co/v2/invoices',
+      payload,
+      {
+        headers: {
+          'Authorization': `Basic ${authHeader}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    console.log('Xendit Invoice Created:', response.data.invoice_url);
+    res.json({ invoice_url: response.data.invoice_url });
   } catch (error) {
-    console.error('Xendit Error Details:', error);
-    res.status(500).json({ 
+    const status = error.response?.status || 500;
+    const errorData = error.response?.data || { message: error.message };
+    
+    console.error(`Xendit Error (${status}):`, errorData);
+    
+    res.status(status).json({ 
       error: error.message,
-      details: error.response?.data || error
+      details: errorData
     });
   }
 });

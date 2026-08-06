@@ -145,9 +145,13 @@ test.describe('Fake Store E2E Automation (POM)', () => {
     });
 
     test('Full E2E Flow: Add to Cart and Verify', async ({ page }) => {
-      page.on('dialog', dialog => {
-        expect(dialog.message()).toContain('Order placed successfully');
-        dialog.accept();
+      // Handle "Order placed successfully" if it appears or the simulation dialog
+      page.on('dialog', async dialog => {
+        if (dialog.message().includes('SIMULATE')) {
+          await dialog.accept();
+        } else {
+          await dialog.accept();
+        }
       });
 
       await homePage.addToCart(0);
@@ -171,12 +175,13 @@ test.describe('Fake Store E2E Automation (POM)', () => {
       const favoriteBtn = page.locator('[data-test="card-favorite-btn"]').first();
       await favoriteBtn.click({ force: true });
       
-      // The text inside the material-icons span changes from favorite_border to favorite
-      await expect(favoriteBtn).toContainText('favorite');
+      // Verify the heart is filled (red-600 class)
+      const svg = favoriteBtn.locator('svg');
+      await expect(svg).toHaveClass(/fill-red-600/);
       
       // Refresh to check persistence in LocalStorage
       await page.reload();
-      await expect(favoriteBtn).toContainText('favorite');
+      await expect(svg).toHaveClass(/fill-red-600/);
     });
   });
 

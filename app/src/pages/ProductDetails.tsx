@@ -150,19 +150,19 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ addToCart, removeOneFro
           </div>
 
           <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="flex h-16 items-center rounded-full bg-zinc-100 px-2 py-2">
+            <div className="flex h-16 w-48 items-center justify-between rounded-full bg-zinc-100 px-6">
               <button
                 onClick={() => removeOneFromCart(product)}
                 disabled={productQuantity === 0}
-                className="flex h-12 w-12 items-center justify-center rounded-full text-xl font-bold text-zinc-400 transition-colors hover:bg-white hover:text-black disabled:opacity-20"
+                className="text-2xl font-light text-zinc-400 transition-colors hover:text-black disabled:opacity-20"
                 data-test="decrement-product-btn"
               >
                 −
               </button>
-              <span className="flex w-12 items-center justify-center text-sm font-black" data-test="qty-count">{productQuantity}</span>
+              <span className="text-lg font-black text-black" data-test="qty-count">{productQuantity}</span>
               <button
                 onClick={() => addToCart(product)}
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-xl font-bold text-black shadow-sm transition-transform active:scale-95"
+                className="text-2xl font-light text-black transition-colors hover:opacity-70"
                 data-test="increment-detail-btn"
               >
                 +
@@ -170,12 +170,12 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ addToCart, removeOneFro
             </div>
             <button
                 onClick={() => addToCart(product)}
-                className="group relative flex flex-1 items-center justify-center gap-3 overflow-hidden rounded-full bg-black px-10 h-16 text-[11px] font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-zinc-800 hover:shadow-2xl active:scale-[0.98]"
+                className="group relative flex flex-1 items-center justify-center gap-3 overflow-hidden rounded-full bg-black px-10 h-16 text-[11px] font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-zinc-800 hover:shadow-2xl active:scale-[0.98] shadow-xl shadow-black/20"
             >
                 <span className="material-icons text-xl">shopping_bag</span>
-                Add to Bag
+                Add to Cart
                 {productQuantity > 0 && (
-                  <span className="ml-2 rounded-full bg-white/20 px-3 py-1 text-[10px]">{productQuantity}</span>
+                  <span className="ml-2 rounded-full bg-white text-black font-bold px-3 py-1 text-[10px] shadow-sm">{productQuantity}</span>
                 )}
             </button>
           </div>

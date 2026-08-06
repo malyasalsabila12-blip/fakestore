@@ -8,7 +8,6 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Profile from './pages/Profile';
 import LoyaltyInfo from './pages/LoyaltyInfo';
-import Payment from './pages/Payment';
 import SlideOverCart from './components/SlideOverCart';
 import ScrollToTop from './components/ScrollToTop';
 import { Product, User, Order } from './types';
@@ -54,7 +53,8 @@ function App() {
           paymentMethod: 'Credit / Debit Card'
         }];
       }
-      return savedOrders;
+      // Auto-complete pending orders when loading app (e.g. returning from Xendit)
+      return savedOrders.map((o: Order) => o.status === 'pending' ? { ...o, status: 'completed' } : o);
     } catch {
       return [];
     }
@@ -178,11 +178,7 @@ function App() {
             />
             <Route 
               path="/cart" 
-              element={user ? <Cart cart={cart} removeFromCart={removeFromCart} clearCart={clearCart} /> : <Navigate to="/login" />} 
-            />
-            <Route 
-              path="/payment" 
-              element={user ? <Payment clearCart={clearCart} addOrder={addOrder} cart={cart} user={user} /> : <Navigate to="/login" />} 
+              element={user ? <Cart cart={cart} removeFromCart={removeFromCart} clearCart={clearCart} user={user} addOrder={addOrder} /> : <Navigate to="/login" />} 
             />
           </Routes>
         </main>

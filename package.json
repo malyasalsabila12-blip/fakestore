@@ -2,6 +2,7 @@
   "name": "fakestore-root",
   "private": true,
   "scripts": {
+    "dev": "concurrently \"npm run dev --prefix app\" \"node server/index.js\"",
     "build": "cd app && npm install && npm run build",
     "install-all": "cd app && npm install && cd ../qa && npm install"
   }

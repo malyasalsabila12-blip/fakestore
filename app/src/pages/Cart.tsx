@@ -1,20 +1,24 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Confetti from '../components/Confetti';
-import { Product } from '../types';
+import { Product, User, Order } from '../types';
 
 interface CartProps {
   cart: Product[];
   removeFromCart: (index: number) => void;
   clearCart: () => void;
+  user: User;
+  addOrder: (order: Order) => void;
 }
 
-const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart }) => {
+const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addOrder }) => {
   const navigate = useNavigate();
   const [voucherCode, setVoucherCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState<{ code: string; amount: number; type: 'percent' | 'flat' } | null>(null);
   const [voucherError, setVoucherError] = useState('');
   const [showConfetti, setShowConfetti] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const totalNum = cart.reduce((sum, item) => sum + item.price, 0);
 
@@ -28,6 +32,109 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart }) => {
 
   const discountAmount = calculateDiscount();
   const finalTotal = Math.max(0, totalNum - discountAmount).toFixed(2);
+
+  const handleCheckout = async () => {
+    if (cart.length === 0) return;
+    
+    setIsProcessing(true);
+    const totalAmount = Math.round(parseFloat(finalTotal) * 15000);
+
+    // Xendit usually requires a minimum amount of 10,000 IDR
+    if (totalAmount < 10000) {
+      setIsProcessing(false);
+      alert(`The total amount (IDR ${totalAmount.toLocaleString()}) is below the minimum required for payment (IDR 10,000). Please add more items to your bag.`);
+      return;
+    }
+
+    try {
+      const orderId = `MAL-${Date.now()}`;
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const apiUrl = isLocal ? 'http://localhost:3001' : '';
+      const response = await axios.post(`${apiUrl}/api/checkout`, {
+        amount: totalAmount,
+        payerEmail: user?.email || 'customer@example.com',
+        description: `Malstro Order for ${user?.username || 'Guest'}`,
+        externalID: orderId,
+        successUrl: `${window.location.origin}/profile`,
+        failureUrl: `${window.location.origin}/cart`,
+        items: cart.map(item => ({
+          id: item.id,
+          title: item.title,
+          price: item.price,
+          category: item.category,
+          quantity: 1
+        }))
+      });
+
+      if (response.data.invoice_url) {
+        const newOrder: Order = {
+          id: orderId,
+          date: new Date().toISOString(),
+          total: totalAmount,
+          items: [...cart],
+          status: 'pending',
+          paymentMethod: 'Xendit Gateway'
+        };
+        
+        addOrder(newOrder);
+        clearCart(); 
+        window.location.href = response.data.invoice_url;
+      } else {
+        throw new Error('Failed to get invoice URL');
+      }
+    } catch (error: any) {
+      console.error('Payment Error:', error);
+      
+      // Try to extract the most meaningful error message
+      let errorMsg = 'Failed to initialize payment.';
+      
+      if (error.response?.data?.details?.message) {
+        errorMsg = error.response.data.details.message;
+      } else if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      } else if (error.response?.data?.error) {
+        errorMsg = error.response.data.error;
+      } else if (error.message === 'Network Error') {
+        errorMsg = 'Could not connect to the payment server. Please ensure the backend is running.';
+      } else {
+        errorMsg = error.message || 'An unknown error occurred.';
+      }
+      
+      const confirmDemo = window.confirm(
+        `Payment Error: ${errorMsg}\n\nWould you like to SIMULATE a successful payment for testing purposes?`
+      );
+
+      if (confirmDemo) {
+        simulateSuccess();
+      } else {
+        setIsProcessing(false);
+      }
+    }
+  };
+
+  const simulateSuccess = () => {
+    setIsProcessing(true);
+    setTimeout(() => {
+      setShowConfetti(true);
+      setIsProcessing(false);
+      
+      const newOrder: Order = {
+        id: `SIM-${Math.floor(100000 + Math.random() * 900000)}`,
+        date: new Date().toISOString(),
+        total: Math.round(parseFloat(finalTotal) * 15000),
+        items: [...cart],
+        status: 'completed',
+        paymentMethod: 'Simulated Xendit Payment'
+      };
+      
+      addOrder(newOrder);
+      clearCart();
+      
+      setTimeout(() => {
+        navigate('/profile');
+      }, 3000);
+    }, 1500);
+  };
 
   const applyVoucher = () => {
     const code = voucherCode.trim().toUpperCase();
@@ -114,8 +221,9 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart }) => {
           </div>
 
           <div className="space-y-6">
-            <div className={`border p-8 border-black bg-white`}>
+            <div className={`border p-8 border-black bg-white sticky top-32`}>
               <h2 className="text-lg font-black uppercase tracking-[0.2em] border-b border-zinc-200 dark:border-zinc-800 pb-4 mb-6">Summary</h2>
+              
               <div className="space-y-4 text-xs font-black uppercase tracking-widest">
                 <div className="flex justify-between">
                   <span className="text-zinc-500">Subtotal</span>
@@ -152,14 +260,19 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart }) => {
               </div>
 
               <button 
-                className="mt-10 w-full bg-black dark:bg-white dark:text-black text-white py-5 text-xs font-black uppercase tracking-[0.3em] hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors flex items-center justify-center gap-3 group"
+                className="mt-10 w-full bg-black dark:bg-white dark:text-black text-white py-5 text-xs font-black uppercase tracking-[0.3em] hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors flex items-center justify-center gap-3 group disabled:opacity-50"
                 data-test="checkout-btn"
-                onClick={() => {
-                  navigate('/payment', { state: { total: Math.round(parseFloat(finalTotal) * 15000) } });
-                }}
+                onClick={handleCheckout}
+                disabled={isProcessing}
               >
-                <span className="material-icons text-sm group-hover:scale-110 transition-transform">lock</span>
-                Secure Checkout
+                {isProcessing ? (
+                  <span className="animate-pulse">Processing...</span>
+                ) : (
+                  <>
+                    <span className="material-icons text-sm group-hover:scale-110 transition-transform">lock</span>
+                    Secure Checkout — IDR {Math.round(parseFloat(finalTotal) * 15000).toLocaleString()}
+                  </>
+                )}
               </button>
               <button onClick={clearCart} className="mt-4 w-full text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-black dark:hover:text-white" data-test="clear-cart-btn">
                 Clear Bag

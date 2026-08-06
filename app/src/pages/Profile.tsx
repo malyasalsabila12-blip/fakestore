@@ -214,7 +214,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
             ) : (
               <div className="space-y-6">
                 {orders.map((order) => (
-                  <div key={order.id} className="border border-zinc-200 bg-white overflow-hidden hover:border-black transition-colors">
+                  <div key={order.id} data-test="order-item" className="border border-zinc-200 bg-white overflow-hidden hover:border-black transition-colors">
                     <div className="p-6 border-b border-zinc-100 bg-zinc-50/50 flex flex-wrap items-center justify-between gap-4">
                       <div className="flex gap-8">
                         <div>
@@ -484,6 +484,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
             </button>
             <button 
               onClick={() => setActiveTab('orders')}
+              data-test="profile-tab-orders"
               className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-bold transition-all ${activeTab === 'orders' ? 'bg-black text-white' : 'text-zinc-600 hover:bg-zinc-50'}`}
             >
               <span className="material-icons text-xl">shopping_basket</span>
