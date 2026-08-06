@@ -49,6 +49,7 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
     try {
       const orderId = `MAL-${Date.now()}`;
       const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      // When deployed on Vercel, we use relative path so it's proxied to the serverless function
       const apiUrl = isLocal ? 'http://localhost:3001' : '';
       const response = await axios.post(`${apiUrl}/api/checkout`, {
         amount: totalAmount,
