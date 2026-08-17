@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Product } from '../types';
+import { Product, CartItem } from '../types';
 
 interface ProductDetailsProps {
   addToCart: (product: Product) => void;
   removeOneFromCart: (product: Product) => void;
-  cart: Product[];
+  cart: CartItem[];
   favorites: number[];
   toggleFavorite: (product: Product) => void;
 }
@@ -147,37 +147,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ addToCart, removeOneFro
           <div className="mt-10 space-y-4">
             <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-black">Product description</h3>
             <p className="text-sm leading-relaxed text-zinc-600" data-test="detail-description">{product.description}</p>
-          </div>
-
-          <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="flex h-16 w-48 items-center justify-between rounded-full bg-zinc-100 px-6">
-              <button
-                onClick={() => removeOneFromCart(product)}
-                disabled={productQuantity === 0}
-                className="text-2xl font-light text-zinc-400 transition-colors hover:text-black disabled:opacity-20"
-                data-test="decrement-product-btn"
-              >
-                −
-              </button>
-              <span className="text-lg font-black text-black" data-test="qty-count">{productQuantity}</span>
-              <button
-                onClick={() => addToCart(product)}
-                className="text-2xl font-light text-black transition-colors hover:opacity-70"
-                data-test="increment-detail-btn"
-              >
-                +
-              </button>
-            </div>
-            <button
-                onClick={() => addToCart(product)}
-                className="group relative flex flex-1 items-center justify-center gap-3 overflow-hidden rounded-full bg-black px-10 h-16 text-[11px] font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-zinc-800 hover:shadow-2xl active:scale-[0.98] shadow-xl shadow-black/20"
-            >
-                <span className="material-icons text-xl">shopping_bag</span>
-                Add to Cart
-                {productQuantity > 0 && (
-                  <span className="ml-2 rounded-full bg-white text-black font-bold px-3 py-1 text-[10px] shadow-sm">{productQuantity}</span>
-                )}
-            </button>
           </div>
 
           {/* Trust Badges */}

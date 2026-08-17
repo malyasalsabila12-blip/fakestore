@@ -47,6 +47,9 @@ const SignUp: React.FC<SignUpProps> = () => {
         <div className={`mx-auto flex min-h-[80vh] max-w-lg flex-col border border-black bg-white shadow-none`}>
         <div className="flex flex-1 flex-col justify-center p-8 md:p-12 text-black">
           <div className="mx-auto w-full max-w-lg">
+            <div className="flex justify-center mb-8">
+              <img src="/malstro-logo.svg" alt="Malstro" className="h-24 w-24 object-contain" />
+            </div>
             {!emailEntered ? (
               <>
                 <div className="mb-6">
@@ -69,14 +72,14 @@ const SignUp: React.FC<SignUpProps> = () => {
                   </div>
                   <button
                     type="submit"
-                    className="w-full mt-6 bg-[#F0F2F5] rounded-full px-4 py-4 text-sm font-bold text-black transition hover:opacity-90"
+                    className="w-full mt-6 bg-black rounded-full px-4 py-4 text-sm font-bold text-white transition hover:opacity-90"
                     data-test="signup-continue-btn"
                   >
                     Continue
                   </button>
                 </form>
-                <div className="mt-4">
-                  <Link to="/login" className="block w-full bg-black rounded-full px-4 py-4 text-sm font-bold text-white text-center transition hover:opacity-90">
+                <div className="mt-8 text-center">
+                  <Link to="/login" className="text-sm font-bold text-black underline underline-offset-4 transition hover:opacity-70">
                     Already have an account? Sign In
                   </Link>
                 </div>

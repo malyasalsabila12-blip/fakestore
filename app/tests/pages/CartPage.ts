@@ -26,4 +26,9 @@ export class CartPage {
   async checkout() {
     await this.checkoutButton.click();
   }
+
+  async applyPromo(code: string) {
+    await this.page.locator('[data-test="promo-input"]').fill(code);
+    await this.page.locator('[data-test="promo-apply-btn"]').click();
+  }
 }

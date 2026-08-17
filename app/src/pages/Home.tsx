@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import ProductCard from '../components/ProductCard';
 import MysteryBox from '../components/MysteryBox';
-import { Product } from '../types';
+import { Product, CartItem } from '../types';
 
 interface HomeProps {
   addToCart: (product: Product) => void;
   removeOneFromCart: (product: Product) => void;
-  cart: Product[];
+  cart: CartItem[];
   favorites: number[];
   toggleFavorite: (product: Product) => void;
 }
@@ -50,8 +50,23 @@ const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorit
           ? 'https://fakestoreapi.com/products'
           : `https://fakestoreapi.com/products/category/${encodeURIComponent(selectedCategory)}`;
         const res = await axios.get(url);
-        setProducts(res.data);
-        setFilteredProducts(res.data);
+        
+        // You can add your own items here
+        const customProducts: Product[] = [
+          {
+            id: 999,
+            title: "Malstro Signature Watch",
+            price: 299.99,
+            description: "A premium limited edition timepiece exclusively from Malstro.",
+            category: "jewelery",
+            image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800",
+            rating: { rate: 4.9, count: 120 }
+          }
+        ];
+
+        const mergedProducts = [...customProducts, ...res.data];
+        setProducts(mergedProducts);
+        setFilteredProducts(mergedProducts);
       } catch (err) {
         console.error(err);
         setError('Failed to fetch products. Please try again later.');

@@ -42,6 +42,11 @@ export class HomePage {
     await btn.click();
   }
 
+  async gotoCart() {
+    await this.cartLink.click();
+    await this.page.locator('[data-test="slideover-checkout"]').click();
+  }
+
   async openProductDetails(index: number = 0) {
     await this.page.locator('[data-test="product-link"]').nth(index).click();
   }

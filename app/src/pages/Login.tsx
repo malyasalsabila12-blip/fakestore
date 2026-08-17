@@ -68,8 +68,10 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         <div className={`mx-auto flex min-h-[80vh] max-w-lg flex-col border border-black bg-white shadow-none`}>
         <div className="flex flex-1 flex-col justify-center p-8 md:p-12 text-black">
           <div className="mx-auto w-full max-w-md">
+            <div className="flex justify-center mb-8">
+              <img src="/malstro-logo.svg" alt="Malstro" className="h-24 w-24 object-contain" />
+            </div>
             <h2 className="text-center text-3xl font-black uppercase tracking-widest text-black">Sign in</h2>
-            <p className="mt-2 text-center text-xs uppercase tracking-wider text-zinc-500">Access your beauty account</p>
 
             {error && (
               <div className="mt-6 border border-red-600 bg-red-50 px-4 py-3 text-sm text-red-600 font-bold" data-test="login-error">
@@ -114,15 +116,15 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#F0F2F5] dark:bg-zinc-800 rounded-full px-4 py-4 text-sm font-bold text-black dark:text-white transition hover:opacity-90 disabled:opacity-70"
+                className="w-full bg-black rounded-full px-4 py-4 text-sm font-bold text-white transition hover:opacity-90 disabled:opacity-70"
                 data-test="login-submit"
               >
                 {loading ? 'Verifying...' : 'Sign In'}
               </button>
             </form>
 
-            <div className="mt-4">
-              <Link to="/signup" className="block w-full bg-black dark:bg-white dark:text-black rounded-full px-4 py-4 text-sm font-bold text-white text-center transition hover:opacity-90">
+            <div className="mt-8 text-center">
+              <Link to="/signup" className="text-sm font-bold text-black underline underline-offset-4 transition hover:opacity-70">
                 New to Malstro? Create Account
               </Link>
             </div>

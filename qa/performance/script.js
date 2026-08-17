@@ -29,8 +29,8 @@ const BASE_URL = 'https://fakestoreapi.com';
 export default function () {
   // 1. Authentication
   const loginPayload = JSON.stringify({
-    username: 'malya',
-    password: 'serverqa123',
+    username: 'johnd',
+    password: 'm38rmF$',
   });
 
   const loginParams = {
@@ -41,9 +41,19 @@ export default function () {
 
   const loginRes = http.post(`${BASE_URL}/auth/login`, loginPayload, loginParams);
 
+  if (loginRes.status !== 200 && loginRes.status !== 201) {
+    console.log(`Login failed with status ${loginRes.status}: ${loginRes.body}`);
+  }
+
   check(loginRes, {
     'login status is 200 or 201': (r) => r.status === 200 || r.status === 201,
-    'login has token': (r) => r.json().token !== undefined,
+    'login has token': (r) => {
+      try {
+        return r.json().token !== undefined;
+      } catch (e) {
+        return false;
+      }
+    },
   });
 
   const token = loginRes.json().token;

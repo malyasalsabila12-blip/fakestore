@@ -92,16 +92,75 @@ test.describe('Payment & Simulation Flow', () => {
     await page.locator('[data-test="slideover-checkout"]').click();
     await expect(page).toHaveURL('/cart');
 
-    // Mock successful checkout redirect
-    await page.route('**/api/checkout', async route => {
+    // Remove the mock to allow the real backend to generate a valid Xendit URL
+    await cartPage.checkout();
+    
+    // Wait for the redirect to Xendit Staging
+    await expect(page).toHaveURL(/checkout-staging\.xendit\.co/, { timeout: 15000 });
+    
+    // Select QR Payments
+    const qrOption = page.locator('button:has-text("QR Payments")');
+    await qrOption.click();
+    
+    // Verify QRIS logo inside the expanded section is visible
+    // We use a more specific locator to target the visible one
+    const qrisLogo = page.locator('img[alt="QRIS"]').filter({ visible: true }).first();
+    await expect(qrisLogo).toBeVisible({ timeout: 15000 });
+    
+    // In staging, we want to actually pay. We look for the simulation button.
+    // Xendit staging often has a "Simulate" button for test payments.
+    const simulateBtn = page.locator('button:has-text("simulate")').or(page.locator('button:has-text("Pay Now")'));
+    if (await simulateBtn.isVisible()) {
+      await simulateBtn.click();
+      // Wait for redirect back to the app profile
+      await expect(page).toHaveURL(/\/profile/, { timeout: 30000 });
+    }
+  });
+
+  test('Minimum Payment Amount Validation', async ({ page }) => {
+    // Mock a very cheap product to trigger the IDR 10,000 minimum check
+    // This override should happen before actions in the test
+    await page.route('**/products', async route => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ invoice_url: 'https://checkout-staging.xendit.co/web/test' })
+        body: JSON.stringify([
+          { id: 99, title: 'Cheap Item', price: 0.1, category: 'test', image: 'https://placehold.co/400', rating: { rate: 5, count: 1 } }
+        ])
       });
     });
 
+    // We need to reload to get the new mocked products
+    await page.reload();
+    
+    await homePage.addToCart(0);
+    await homePage.gotoCart();
+
+    // Handle the alert
+    page.on('dialog', async dialog => {
+      expect(dialog.message()).toContain('below the minimum required');
+      await dialog.accept();
+    });
+
     await cartPage.checkout();
-    await expect(page).toHaveURL(/checkout-staging\.xendit\.co/);
+  });
+
+  test('Promo Code Application', async ({ page }) => {
+    await homePage.addToCart(0);
+    await homePage.gotoCart();
+
+    const initialTotalText = await cartPage.cartTotal.innerText();
+    
+    await cartPage.applyPromo('SAVE10');
+
+    const newTotalText = await cartPage.cartTotal.innerText();
+    expect(newTotalText).not.toBe(initialTotalText);
+    await expect(page.locator('text=Discount (SAVE10)')).toBeVisible();
+  });
+
+  test('Empty Cart State', async ({ page }) => {
+    await cartPage.goto();
+    await expect(cartPage.emptyCartMessage).toBeVisible();
+    await expect(cartPage.checkoutButton).not.toBeVisible();
   });
 });

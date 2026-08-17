@@ -211,11 +211,6 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
                     <h3 className="mt-1 text-sm font-black uppercase tracking-tight truncate">{item.title}</h3>
                     <p className="mt-2 text-sm font-black">IDR {Math.round(item.price * 15000).toLocaleString()}</p>
                   </div>
-                  <button onClick={() => removeFromCart(index)} className="p-2 hover:text-red-600 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
                 </div>
               ))}
             </div>
@@ -254,10 +249,11 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
                     value={voucherCode}
                     onChange={(e) => setVoucherCode(e.target.value)}
                     className="flex-1 border-b border-black dark:border-zinc-700 py-2 text-xs font-black outline-none bg-transparent"
+                    data-test="promo-input"
                   />
-                  <button onClick={applyVoucher} className="bg-black dark:bg-white dark:text-black text-white px-6 py-2 text-[10px] font-black uppercase tracking-widest hover:opacity-80">Apply</button>
+                  <button onClick={applyVoucher} className="bg-black dark:bg-white dark:text-black text-white px-6 py-2 text-[10px] font-black uppercase tracking-widest hover:opacity-80" data-test="promo-apply-btn">Apply</button>
                 </div>
-                {voucherError && <p className="mt-2 text-[9px] font-black text-red-600 uppercase">{voucherError}</p>}
+                {voucherError && <p className="mt-2 text-[9px] font-black text-red-600 uppercase" data-test="promo-error">{voucherError}</p>}
               </div>
 
               <button 

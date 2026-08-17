@@ -168,6 +168,9 @@ test.describe('Fake Store E2E Automation (POM)', () => {
       await expect(total).toContainText('IDR');
       
       await page.locator('[data-test="checkout-btn"]').click();
+
+      // Wait for Xendit Redirect to verify UI is reachable
+      await expect(page).toHaveURL(/checkout-staging\.xendit\.co/, { timeout: 15000 });
     });
 
     test('Add to Favorites and Verify State', async ({ page }) => {

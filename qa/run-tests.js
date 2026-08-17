@@ -26,7 +26,7 @@ const newmanArgs = [
 const newman = spawnSync(npxCmd, newmanArgs, {
   cwd,
   stdio: 'inherit',
-  shell: false,
+  shell: true,
 });
 
 if (newman.status !== 0) {
@@ -42,7 +42,7 @@ if (fs.existsSync(reportPath)) {
 const report = spawnSync(npmCmd, ['run', 'report'], {
   cwd,
   stdio: 'inherit',
-  shell: false,
+  shell: true,
 });
 
 process.exit(report.status ?? 1);

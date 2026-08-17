@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Product } from '../types';
+import { Product, CartItem } from '../types';
 
 interface ProductCardProps {
   product: Product;
   addToCart: (product: Product) => void;
   removeOneFromCart: (product: Product) => void;
-  cart: Product[];
+  cart: CartItem[];
   favorites: number[];
   toggleFavorite: (product: Product) => void;
 }
