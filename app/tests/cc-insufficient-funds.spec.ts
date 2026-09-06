@@ -132,15 +132,6 @@ test.describe('Credit Card Negative Scenarios - Xendit Failures', () => {
                   if (await okBtn.isVisible()) {
                       await okBtn.click();
                       console.log('Clicked OK on failure modal.');
-                      await page.waitForTimeout(3000);
-                      
-                      // If still on Xendit after clicking OK, manually redirect to the failure URL
-                      // because Xendit sometimes doesn't auto-redirect on failure modals.
-                      if (page.url().includes('xendit.co')) {
-                          console.log('Detected stuck on Xendit, forcing redirect...');
-                          const failureUrl = `${process.env.BASE_URL || 'http://localhost:5173'}/cart?status=failure&reason=${scenario.amount.slice(-2)}`;
-                          await page.goto(failureUrl);
-                      }
                   }
                   break;
               }

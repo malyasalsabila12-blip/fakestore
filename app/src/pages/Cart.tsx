@@ -58,18 +58,21 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
 
     try {
       const orderId = `MAL-${Date.now()}`;
-      // Use the specific trigger code if it's a test item, otherwise use INSUFFICIENT_BALANCE
-      const failureReason = totalAmount === 13051 ? '51' : 
-                            totalAmount === 10054 ? '54' : 
-                            totalAmount === 10059 ? '59' : 'INSUFFICIENT_BALANCE';
+      // Map the specialized totalAmount back to a reason code for the redirect
+      const getReasonCode = () => {
+        const lastTwo = totalAmount % 100;
+        if (lastTwo === 51 || lastTwo === 54 || lastTwo === 59) return lastTwo.toString();
+        return 'INSUFFICIENT_BALANCE';
+      };
 
+      // Use relative path - Vite proxy handles this in dev, and Vercel in production
       const response = await axios.post('/api/checkout', {
         amount: totalAmount,
         payerEmail: user?.email || 'customer@example.com',
         description: `Malstro Order for ${user?.username || 'Guest'}`,
         externalID: orderId,
         successUrl: `${window.location.origin}/cart?status=success`,
-        failureUrl: `${window.location.origin}/cart?status=failure&reason=${failureReason}`,
+        failureUrl: `${window.location.origin}/cart?status=failure&reason=${getReasonCode()}`,
         items: cart.map(item => ({
           id: item.id,
           title: item.title,
