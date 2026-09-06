@@ -5,9 +5,10 @@ interface NavbarProps {
   cartCount: number;
   username: string;
   onOpenCart: () => void;
+  hasError?: boolean;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ cartCount, username, onOpenCart }) => {
+const Navbar: React.FC<NavbarProps> = ({ cartCount, username, onOpenCart, hasError }) => {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -20,20 +21,13 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount, username, onOpenCart }) => {
 
   return (
     <nav 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      className={`fixed ${hasError ? 'top-[52px]' : 'top-0'} left-0 right-0 z-50 transition-all duration-500 ${
         scrolled 
           ? 'bg-white/80 backdrop-blur-md shadow-sm border-zinc-100 py-2' 
           : 'bg-white border-transparent py-4'
       } border-b text-black`} 
       data-test="navbar"
     >
-      <div className={`promo-bar transition-all duration-500 overflow-hidden ${scrolled ? 'h-0 opacity-0' : 'h-8 opacity-100 mb-2'}`}>
-        <div className="bg-black py-1.5 text-center text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white">
-          <Link to="/" className="hover:opacity-80">
-            10% OFF + FREE GIFT + FREE SHIPPING | FIRST APP PURCHASE ONLY | USE CODE APP10
-          </Link>
-        </div>
-      </div>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 md:px-8">
         <div className="flex items-center">
           <Link to="/" className="flex items-center group" data-test="nav-logo">

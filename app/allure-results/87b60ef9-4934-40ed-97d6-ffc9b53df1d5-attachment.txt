@@ -1,0 +1,63 @@
+Searching for simulation banner...
+Found simulation banner. Clicking...
+Selecting Insufficient Balance simulation...
+Attempting to trigger payment...
+Pay button clicked successfully.
+Waiting for final result...
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de
+Current URL: https://checkout-staging.xendit.co/web/6a96710143bc9c4d4ed9a6de

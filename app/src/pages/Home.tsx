@@ -61,6 +61,15 @@ const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorit
             category: "jewelery",
             image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800",
             rating: { rate: 4.9, count: 120 }
+          },
+          {
+            id: 1013,
+            title: "Trigger Failure Item",
+            price: 13051 / 15000, // Exactly 13,051 IDR when multiplied by 15,000
+            description: "Special item for testing insufficient balance failure (Test Mode).",
+            category: "jewelery",
+            image: "https://images.unsplash.com/photo-1594539829535-de2adbd3c761?auto=format&fit=crop&q=80&w=800",
+            rating: { rate: 1.0, count: 0 }
           }
         ];
 
@@ -148,10 +157,6 @@ const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorit
               <button className="bg-white text-black px-10 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 transition shadow-xl rounded-full">
                 Shop the Sale
               </button>
-              <div key={`discount-${activeSlide}`} className="discount-tag animate-shimmer px-8 py-4 text-2xl font-black italic tracking-tighter animate-discount-pop flex flex-col items-start leading-none rounded-2xl bg-gradient-to-r from-red-600 to-rose-500">
-                <span className="text-[10px] not-italic tracking-[0.2em] opacity-80 mb-1">LIMITED TIME</span>
-                {slides[activeSlide].discount}
-              </div>
             </div>
           </div>
           

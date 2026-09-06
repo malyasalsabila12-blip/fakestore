@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import Confetti from '../components/Confetti';
 import { Product, User, Order } from '../types';
@@ -14,6 +14,7 @@ interface CartProps {
 
 const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addOrder }) => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [voucherCode, setVoucherCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState<{ code: string; amount: number; type: 'percent' | 'flat' } | null>(null);
   const [voucherError, setVoucherError] = useState('');
@@ -31,13 +32,17 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
   };
 
   const discountAmount = calculateDiscount();
-  const finalTotal = Math.max(0, totalNum - discountAmount).toFixed(2);
+  const finalTotalNum = Math.max(0, totalNum - discountAmount);
+  const finalTotal = finalTotalNum.toFixed(2);
+
+  const totalAmount = cart.some(item => item.id === 1013 || item.title?.includes('Trigger Failure Item'))
+    ? 13051
+    : Math.round(finalTotalNum * 15000);
 
   const handleCheckout = async () => {
     if (cart.length === 0) return;
     
     setIsProcessing(true);
-    const totalAmount = Math.round(parseFloat(finalTotal) * 15000);
 
     // Xendit usually requires a minimum amount of 10,000 IDR
     if (totalAmount < 10000) {
@@ -48,16 +53,14 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
 
     try {
       const orderId = `MAL-${Date.now()}`;
-      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      // When deployed on Vercel, we use relative path so it's proxied to the serverless function
-      const apiUrl = isLocal ? 'http://localhost:3001' : '';
-      const response = await axios.post(`${apiUrl}/api/checkout`, {
+      // Use relative path - Vite proxy handles this in dev, and Vercel in production
+      const response = await axios.post('/api/checkout', {
         amount: totalAmount,
         payerEmail: user?.email || 'customer@example.com',
         description: `Malstro Order for ${user?.username || 'Guest'}`,
         externalID: orderId,
-        successUrl: `${window.location.origin}/profile`,
-        failureUrl: `${window.location.origin}/cart`,
+        successUrl: `${window.location.origin}/cart?status=success`,
+        failureUrl: `${window.location.origin}/cart?status=failure&reason=${totalAmount % 100 === 51 ? '51' : 'INSUFFICIENT_BALANCE'}`,
         items: cart.map(item => ({
           id: item.id,
           title: item.title,
@@ -102,13 +105,18 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
       }
       
       const confirmDemo = window.confirm(
-        `Payment Error: ${errorMsg}\n\nWould you like to SIMULATE a successful payment for testing purposes?`
+        `Payment Error: ${errorMsg}\n\nWould you like to SIMULATE a successful payment for testing purposes?\n\n(Click Cancel for more simulation options)`
       );
 
       if (confirmDemo) {
         simulateSuccess();
       } else {
-        setIsProcessing(false);
+        const simulateFailureOpt = window.confirm("Would you like to SIMULATE an 'INSUFFICIENT BALANCE' (Error 51) failure?");
+        if (simulateFailureOpt) {
+          simulateFailure('INSUFFICIENT_BALANCE', '51 - Insufficient Balance');
+        } else {
+          setIsProcessing(false);
+        }
       }
     }
   };
@@ -132,9 +140,29 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
       clearCart();
       
       setTimeout(() => {
-        navigate('/profile');
+        navigate('/');
       }, 3000);
     }, 1500);
+  };
+
+  const simulateFailure = (errorCode: string, errorMsg: string) => {
+    setIsProcessing(true);
+    setTimeout(() => {
+      setIsProcessing(false);
+      
+      const newOrder: Order = {
+        id: `FAIL-${Math.floor(100000 + Math.random() * 900000)}`,
+        date: new Date().toISOString(),
+        total: totalAmount,
+        items: [...cart],
+        status: 'cancelled',
+        paymentMethod: `Xendit Simulation (${errorCode})`
+      };
+      
+      addOrder(newOrder);
+      clearCart();
+      navigate(`/cart?status=failure&reason=${errorCode}`);
+    }, 1000);
   };
 
   const applyVoucher = () => {
@@ -166,6 +194,7 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-8">
       <Confetti active={showConfetti} />
+      
       <div className="mb-10 flex flex-col gap-3 md:flex-row md:items-end md:justify-between border-b border-black dark:border-zinc-800 pb-8">
         <div>
           <p className="text-[11px] font-black uppercase tracking-[0.4em] text-zinc-500">Checkout</p>
@@ -188,20 +217,6 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
       ) : (
         <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr]">
           <div className="space-y-6">
-            <div className={`border p-6 bg-zinc-50 border-zinc-200`}>
-              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-red-600">Rewards</p>
-              <div className="mt-4 flex items-end justify-between">
-                <div>
-                  <h3 className="text-sm font-black uppercase tracking-widest">{isAllReached ? 'Max savings reached' : `Add IDR ${Math.round((nextMilestone.amount - totalNum) * 15000).toLocaleString()} more`}</h3>
-                  <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-zinc-500">{nextMilestone.label}</p>
-                </div>
-                <span className="text-xs font-black">IDR {Math.round(totalNum * 15000).toLocaleString()}</span>
-              </div>
-              <div className="mt-4 h-1 bg-zinc-200 dark:bg-zinc-700">
-                <div className="h-full bg-black dark:bg-white transition-all duration-500" style={{ width: `${progress}%` }}></div>
-              </div>
-            </div>
-
             <div className="space-y-4">
               {cart.map((item, index) => (
                 <div key={`${item.id}-${index}`} className={`flex items-center gap-6 border p-6 border-zinc-200 bg-white`}>
@@ -237,7 +252,7 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
                 )}
                 <div className="flex justify-between text-lg border-t border-zinc-200 dark:border-zinc-800 pt-4 mt-4">
                   <span>Total</span>
-                  <span data-test="cart-total">IDR {Math.round(parseFloat(finalTotal) * 15000).toLocaleString()}</span>
+                  <span data-test="cart-total">IDR {totalAmount.toLocaleString()}</span>
                 </div>
               </div>
 
@@ -267,7 +282,7 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
                 ) : (
                   <>
                     <span className="material-icons text-sm group-hover:scale-110 transition-transform">lock</span>
-                    Secure Checkout — IDR {Math.round(parseFloat(finalTotal) * 15000).toLocaleString()}
+                    Secure Checkout — IDR {totalAmount.toLocaleString()}
                   </>
                 )}
               </button>

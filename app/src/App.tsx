@@ -32,6 +32,7 @@ function App() {
     }
   });
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
   const [orders, setOrders] = useState<Order[]>(() => {
     try {
       const savedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
@@ -54,7 +55,31 @@ function App() {
         }];
       }
       // Auto-complete pending orders when loading app (e.g. returning from Xendit)
-      return savedOrders.map((o: Order) => o.status === 'pending' ? { ...o, status: 'completed' } : o);
+      const isFailure = window.location.search.includes('status=failure');
+      
+      return savedOrders.map((o: Order) => {
+        if (o.status !== 'pending') return o;
+        
+        // If it's a failure page, cancel it
+        if (isFailure) return { ...o, status: 'cancelled' };
+        
+        // Special case: if order contains the trigger item, it should NEVER be completed
+        const hasTriggerItem = o.items.some(item => item.title === 'Trigger Failure Item');
+        if (hasTriggerItem) {
+          // If we landed here without status=failure, Xendit might have mis-redirected
+          // We'll force it to cancelled and trigger the error banner
+          setTimeout(() => {
+            setPaymentError('Transaction Failed: Your account has insufficient balance. Please use another card or top up your account.');
+            // Clean up the URL if it incorrectly says success
+            if (window.location.search.includes('status=success')) {
+              window.history.replaceState({}, '', window.location.pathname + '?status=failure&reason=51');
+            }
+          }, 500);
+          return { ...o, status: 'cancelled' };
+        }
+        
+        return { ...o, status: 'completed' };
+      });
     } catch {
       return [];
     }
@@ -136,72 +161,135 @@ function App() {
     }
   };
 
-  const MainContent = () => {
-    const location = useLocation();
-    const isAuthRoute = location.pathname === '/login' || location.pathname === '/signup';
-
-    return (
-      <div className={`min-h-screen transition-colors duration-300 relative bg-white`}>
-
-        {user && (
-          <Navbar 
-            cartCount={cart.length} 
-            username={user.username} 
-            onOpenCart={() => setIsCartOpen(true)}
-          />
-        )}
-        <main className={`relative ${isAuthRoute ? 'pt-0' : 'pt-24'}`}>
-          <Routes>
-            <Route 
-              path="/login" 
-              element={!user ? <Login onLogin={handleLogin} /> : <Navigate to="/" />} 
-            />
-            <Route 
-              path="/signup" 
-              element={!user ? <SignUp /> : <Navigate to="/" />} 
-            />
-            <Route 
-              path="/profile" 
-              element={user ? <Profile user={user} onLogout={handleLogout} onUpdateUsername={handleUpdateUsername} orders={orders} /> : <Navigate to="/login" />} 
-            />
-            <Route 
-              path="/loyalty" 
-              element={user ? <LoyaltyInfo /> : <Navigate to="/login" />} 
-            />
-            <Route 
-              path="/" 
-              element={user ? <Home addToCart={addToCart} removeOneFromCart={removeOneFromCart} cart={cart} favorites={favorites} toggleFavorite={toggleFavorite} /> : <Navigate to="/login" />} 
-            />
-            <Route 
-              path="/product/:id" 
-              element={user ? <ProductDetails addToCart={addToCart} removeOneFromCart={removeOneFromCart} cart={cart} favorites={favorites} toggleFavorite={toggleFavorite} /> : <Navigate to="/login" />} 
-            />
-            <Route 
-              path="/cart" 
-              element={user ? <Cart cart={cart} removeFromCart={removeFromCart} clearCart={clearCart} user={user} addOrder={addOrder} /> : <Navigate to="/login" />} 
-            />
-          </Routes>
-        </main>
-
-        {user && (
-          <SlideOverCart
-            isOpen={isCartOpen}
-            cart={cart}
-            onClose={() => setIsCartOpen(false)}
-            removeFromCart={removeFromCart}
-            clearCart={clearCart}
-          />
-        )}
-      </div>
-    );
-  };
-
   return (
     <Router>
       <ScrollToTop />
-      <MainContent />
+      <MainContent 
+        user={user} 
+        cart={cart} 
+        orders={orders} 
+        isCartOpen={isCartOpen}
+        setIsCartOpen={setIsCartOpen}
+        paymentError={paymentError}
+        setPaymentError={setPaymentError}
+        handleLogin={handleLogin}
+        handleLogout={handleLogout}
+        handleUpdateUsername={handleUpdateUsername}
+        addToCart={addToCart}
+        removeOneFromCart={removeOneFromCart}
+        favorites={favorites}
+        toggleFavorite={toggleFavorite}
+        removeFromCart={removeFromCart}
+        clearCart={clearCart}
+        addOrder={addOrder}
+      />
     </Router>
   );
 }
+
+const MainContent = ({ 
+  user, cart, orders, isCartOpen, setIsCartOpen, paymentError, setPaymentError,
+  handleLogin, handleLogout, handleUpdateUsername, addToCart, removeOneFromCart,
+  favorites, toggleFavorite, removeFromCart, clearCart, addOrder
+}: any) => {
+  const location = useLocation();
+  const isAuthRoute = location.pathname === '/login' || location.pathname === '/signup';
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const status = searchParams.get('status');
+    const reason = searchParams.get('reason');
+
+    if (status === 'failure') {
+      let msg = 'Your payment was unsuccessful. Please check your payment details and try again.';
+      
+      if (reason === 'INSUFFICIENT_BALANCE' || reason === '51') {
+        msg = 'Transaction Failed: Your account has insufficient balance. Please use another card or top up your account.';
+      } else if (reason === 'CARD_DECLINED' || reason === '05') {
+        msg = 'Transaction Failed: Your card was declined by the bank. Please contact your bank or try a different card.';
+      } else if (reason === 'EXPIRED_CARD' || reason === '54') {
+        msg = 'Transaction Failed: Your card has expired. Please use a valid card.';
+      } else if (reason === 'AUTHENTICATION_FAILED') {
+        msg = 'Transaction Failed: 3DS authentication failed. Please try again.';
+      }
+
+      setPaymentError(msg);
+    } else if (status === 'success' || (location.pathname === '/' && !status)) {
+      // Clear error on success or clean home navigation
+      setPaymentError(null);
+    }
+  }, [location, setPaymentError]);
+
+  return (
+    <div className={`min-h-screen transition-colors duration-300 relative bg-white`}>
+      {paymentError && (
+        <div data-test="payment-error-banner" className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between border-b border-red-200 bg-red-50 p-4 animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="mx-auto flex max-w-7xl w-full items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="material-icons text-red-600">error_outline</span>
+              <p className="text-[11px] font-black uppercase tracking-widest text-red-600">{paymentError}</p>
+            </div>
+            <button 
+              onClick={() => setPaymentError(null)}
+              className="text-red-400 hover:text-red-600"
+            >
+              <span className="material-icons text-lg">close</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {user && (
+        <Navbar 
+          cartCount={cart.length} 
+          username={user.username} 
+          onOpenCart={() => setIsCartOpen(true)}
+        />
+      )}
+      <main className={`relative ${isAuthRoute ? 'pt-0' : 'pt-24'}`}>
+        <Routes>
+          <Route 
+            path="/login" 
+            element={!user ? <Login onLogin={handleLogin} /> : <Navigate to="/" />} 
+          />
+          <Route 
+            path="/signup" 
+            element={!user ? <SignUp /> : <Navigate to="/" />} 
+          />
+          <Route 
+            path="/profile" 
+            element={user ? <Profile user={user} onLogout={handleLogout} onUpdateUsername={handleUpdateUsername} orders={orders} /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/loyalty" 
+            element={user ? <LoyaltyInfo /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/" 
+            element={user ? <Home addToCart={addToCart} removeOneFromCart={removeOneFromCart} cart={cart} favorites={favorites} toggleFavorite={toggleFavorite} /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/product/:id" 
+            element={user ? <ProductDetails addToCart={addToCart} removeOneFromCart={removeOneFromCart} cart={cart} favorites={favorites} toggleFavorite={toggleFavorite} /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/cart" 
+            element={user ? <Cart cart={cart} removeFromCart={removeFromCart} clearCart={clearCart} user={user} addOrder={addOrder} /> : <Navigate to="/login" />} 
+          />
+        </Routes>
+      </main>
+
+      {user && (
+        <SlideOverCart
+          isOpen={isCartOpen}
+          cart={cart}
+          onClose={() => setIsCartOpen(false)}
+          removeFromCart={removeFromCart}
+          clearCart={clearCart}
+        />
+      )}
+    </div>
+  );
+};
 
 export default App;

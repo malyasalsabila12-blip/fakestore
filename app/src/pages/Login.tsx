@@ -54,7 +54,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         });
         navigate('/');
       } else {
-        setError('Invalid username or password (try: malya / serverqa123)');
+        setError('Invalid username or password (try: malyasqa / serverqa123)');
       }
     } catch (err) {
       setError('Something went wrong. Please try again.');

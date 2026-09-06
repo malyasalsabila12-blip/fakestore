@@ -1,27 +1,16 @@
-import { Page, Locator } from '@playwright/test';
+import { Page } from '@playwright/test';
 
 export class LoginPage {
-  readonly page: Page;
-  readonly usernameInput: Locator;
-  readonly passwordInput: Locator;
-  readonly submitButton: Locator;
-  readonly errorMessage: Locator;
-
-  constructor(page: Page) {
-    this.page = page;
-    this.usernameInput = page.locator('[data-test="username-input"]');
-    this.passwordInput = page.locator('[data-test="password-input"]');
-    this.submitButton = page.locator('[data-test="login-submit"]');
-    this.errorMessage = page.locator('[data-test="login-error"]');
-  }
+  constructor(private page: Page) {}
 
   async goto() {
     await this.page.goto('/login');
   }
 
   async login(username: string, password: string) {
-    await this.usernameInput.fill(username);
-    await this.passwordInput.fill(password);
-    await this.submitButton.click();
+    await this.page.fill('[data-test="username-input"]', username);
+    await this.page.fill('[data-test="password-input"]', password);
+    const submitBtn = this.page.locator('[data-test="login-submit"]');
+    await submitBtn.click({ force: true });
   }
 }

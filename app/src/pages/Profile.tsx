@@ -22,7 +22,7 @@ interface ProfileProps {
 
 const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, orders }) => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'wishlist' | 'addresses'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'wishlist' | 'addresses' | 'skills'>('profile');
   const [isEditing, setIsEditing] = useState(false);
   const [editUsername, setEditUsername] = useState(user.username);
   const [showAddressForm, setShowAddressForm] = useState(false);
@@ -78,6 +78,45 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
 
   const renderTabContent = () => {
     switch (activeTab) {
+      case 'skills':
+        return (
+          <div className="space-y-8">
+            <h2 className="text-xl font-black uppercase tracking-widest text-black">Technical Skills</h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                { name: 'React 19', level: 'Advanced', icon: 'code' },
+                { name: 'TypeScript', level: 'Expert', icon: 'terminal' },
+                { name: 'Tailwind CSS', level: 'Advanced', icon: 'palette' },
+                { name: 'Node.js', level: 'Intermediate', icon: 'dns' },
+                { name: 'Xendit API', level: 'Integrated', icon: 'payments' },
+                { name: 'Playwright', level: 'Testing', icon: 'fact_check' },
+                { name: 'Newman/Postman', level: 'API Testing', icon: 'api' },
+                { name: 'Vite', level: 'Build Tool', icon: 'bolt' },
+                { name: 'Git/GitHub', level: 'Workflow', icon: 'hub' },
+              ].map((skill) => (
+                <div key={skill.name} className="flex items-center gap-4 rounded-2xl border border-black p-4 bg-white hover:bg-yellow-100 transition-colors">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-white">
+                    <span className="material-icons text-xl">{skill.icon}</span>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-black">{skill.name}</h3>
+                    <p className="text-xs uppercase tracking-widest text-zinc-500">{skill.level}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-8 rounded-2xl bg-black p-6 text-white">
+              <h3 className="text-lg font-black uppercase tracking-widest mb-4">LinkedIn Recommendation</h3>
+              <p className="text-sm text-zinc-400 mb-4 italic">"I've demonstrated these skills by building this full-stack application, integrating payment gateways, and implementing automated testing pipelines."</p>
+              <button 
+                onClick={() => window.open('https://www.linkedin.com/in/', '_blank')}
+                className="inline-flex items-center gap-2 bg-white px-6 py-2 text-xs font-black uppercase tracking-widest text-black hover:bg-yellow-400 transition-colors"
+              >
+                Update LinkedIn Profile
+              </button>
+            </div>
+          </div>
+        );
       case 'addresses':
         return (
           <div className="space-y-8">
@@ -231,8 +270,8 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="h-2 w-2 rounded-full bg-green-500"></span>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-green-600">{order.status}</span>
+                        <span className={`h-2 w-2 rounded-full ${order.status === 'completed' ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${order.status === 'completed' ? 'text-green-600' : 'text-red-600'}`}>{order.status}</span>
                       </div>
                     </div>
                     <div className="p-6">
@@ -292,8 +331,8 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
                     <div className="grid gap-6 md:grid-cols-2 text-[10px] font-black uppercase tracking-widest">
                        <div className="space-y-1">
                           <p className="text-zinc-400">Status</p>
-                          <p className="text-green-600 flex items-center gap-2">
-                             <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                          <p className={`${selectedOrder.status === 'completed' ? 'text-green-600' : 'text-red-600'} flex items-center gap-2`}>
+                             <span className={`h-2 w-2 rounded-full ${selectedOrder.status === 'completed' ? 'bg-green-500' : 'bg-red-500'}`}></span>
                              {selectedOrder.status}
                           </p>
                        </div>
@@ -504,6 +543,13 @@ const Profile: React.FC<ProfileProps> = ({ user, onLogout, onUpdateUsername, ord
             >
               <span className="material-icons text-xl">location_on</span>
               Addresses
+            </button>
+            <button 
+              onClick={() => setActiveTab('skills')}
+              className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-bold transition-all ${activeTab === 'skills' ? 'bg-black text-white' : 'text-zinc-600 hover:bg-zinc-50'}`}
+            >
+              <span className="material-icons text-xl">psychology</span>
+              LinkedIn Skills
             </button>
             <button 
               onClick={() => navigate('/loyalty')}
