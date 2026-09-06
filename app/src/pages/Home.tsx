@@ -64,11 +64,29 @@ const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorit
           },
           {
             id: 1013,
-            title: "Trigger Failure Item",
-            price: 13051 / 15000, // Exactly 13,051 IDR when multiplied by 15,000
-            description: "Special item for testing insufficient balance failure (Test Mode).",
+            title: "Trigger Failure Item (51)",
+            price: 13051 / 15000,
+            description: "Test Code 51: Insufficient Balance.",
             category: "jewelery",
             image: "https://images.unsplash.com/photo-1594539829535-de2adbd3c761?auto=format&fit=crop&q=80&w=800",
+            rating: { rate: 1.0, count: 0 }
+          },
+          {
+            id: 1054,
+            title: "Trigger Failure Item (54)",
+            price: 10054 / 15000,
+            description: "Test Code 54: Insufficient Balance (User defined).",
+            category: "jewelery",
+            image: "https://images.unsplash.com/photo-1573408302185-9127b5428fb3?auto=format&fit=crop&q=80&w=800",
+            rating: { rate: 1.0, count: 0 }
+          },
+          {
+            id: 1059,
+            title: "Trigger Failure Item (59)",
+            price: 10059 / 15000,
+            description: "Test Code 59: Declined by Issuer.",
+            category: "jewelery",
+            image: "https://images.unsplash.com/photo-1589750670744-dc963161a917?auto=format&fit=crop&q=80&w=800",
             rating: { rate: 1.0, count: 0 }
           }
         ];

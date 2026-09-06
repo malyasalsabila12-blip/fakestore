@@ -203,11 +203,11 @@ const MainContent = ({
     if (status === 'failure') {
       let msg = 'Your payment was unsuccessful. Please check your payment details and try again.';
       
-      if (reason === 'INSUFFICIENT_BALANCE' || reason === '51') {
+      if (reason === 'INSUFFICIENT_BALANCE' || reason === '51' || reason === '54') {
         msg = 'Transaction Failed: Your account has insufficient balance. Please use another card or top up your account.';
-      } else if (reason === 'CARD_DECLINED' || reason === '05') {
-        msg = 'Transaction Failed: Your card was declined by the bank. Please contact your bank or try a different card.';
-      } else if (reason === 'EXPIRED_CARD' || reason === '54') {
+      } else if (reason === 'CARD_DECLINED' || reason === '05' || reason === '59') {
+        msg = 'Transaction Failed: Your card was declined by the issuer. Please contact your bank or try a different card.';
+      } else if (reason === 'EXPIRED_CARD') {
         msg = 'Transaction Failed: Your card has expired. Please use a valid card.';
       } else if (reason === 'AUTHENTICATION_FAILED') {
         msg = 'Transaction Failed: 3DS authentication failed. Please try again.';

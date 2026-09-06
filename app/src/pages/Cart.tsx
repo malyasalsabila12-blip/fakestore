@@ -35,9 +35,14 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
   const finalTotalNum = Math.max(0, totalNum - discountAmount);
   const finalTotal = finalTotalNum.toFixed(2);
 
-  const totalAmount = cart.some(item => item.id === 1013 || item.title?.includes('Trigger Failure Item'))
-    ? 13051
-    : Math.round(finalTotalNum * 15000);
+  const getTriggerAmount = () => {
+    if (cart.some(item => item.id === 1059 || item.title?.includes('(59)'))) return 10059;
+    if (cart.some(item => item.id === 1054 || item.title?.includes('(54)'))) return 10054;
+    if (cart.some(item => item.id === 1013 || item.title?.includes('(51)'))) return 13051;
+    return Math.round(finalTotalNum * 15000);
+  };
+
+  const totalAmount = getTriggerAmount();
 
   const handleCheckout = async () => {
     if (cart.length === 0) return;
