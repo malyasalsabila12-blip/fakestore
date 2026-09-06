@@ -63,15 +63,6 @@ const Home: React.FC<HomeProps> = ({ addToCart, removeOneFromCart, cart, favorit
             rating: { rate: 4.9, count: 120 }
           },
           {
-            id: 1013,
-            title: "Trigger Failure Item (51)",
-            price: 13051 / 15000,
-            description: "Test Code 51: Insufficient Balance.",
-            category: "jewelery",
-            image: "https://images.unsplash.com/photo-1594539829535-de2adbd3c761?auto=format&fit=crop&q=80&w=800",
-            rating: { rate: 1.0, count: 0 }
-          },
-          {
             id: 1054,
             title: "Trigger Failure Item (54)",
             price: 10054 / 15000,

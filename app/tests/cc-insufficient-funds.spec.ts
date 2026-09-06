@@ -102,34 +102,48 @@ test.describe('Credit Card Negative Scenarios - Xendit Failures', () => {
       if (banner) {
           console.log('Found simulation banner. Clicking...');
           await banner.click({ force: true });
-          await page.waitForTimeout(2000);
+          
+          // Wait for simulation options to be visible
+          const scenarioOption = page.locator('button, div, li').filter({ hasText: scenario.term }).first();
+          await scenarioOption.waitFor({ state: 'visible', timeout: 10000 }).catch(() => console.log('Scenario option not found automatically, searching frames...'));
           
           for (const frame of [page, ...page.frames()]) {
               const failureOption = frame.locator('button, div, li').filter({ hasText: scenario.term }).first();
               if (await failureOption.isVisible().catch(() => false)) {
                   console.log(`Selecting ${scenario.title} simulation...`);
                   await failureOption.click({ force: true });
+                  await page.waitForTimeout(1000);
                   break;
               }
           }
       }
 
+      // 5b. Fill Card Details if still empty (ensures Pay button is enabled)
+      const cardNumberInput = page.getByPlaceholder('4000 0000 0000 1091').first();
+      if (await cardNumberInput.isVisible() && (await cardNumberInput.inputValue()) === '') {
+          console.log('Card details empty, filling dummy data...');
+          await cardNumberInput.fill('4000 0000 0000 1091');
+          await page.getByPlaceholder('MM/YY').first().fill('12/25');
+          await page.getByPlaceholder('CVN').first().fill('123');
+      }
+
       // 6. Pay
       const payBtn = page.locator('button:has-text("Pay"), button:has-text("PAY"), [data-testid*="pay"]').first();
-      await payBtn.click({ force: true }).catch(() => {});
+      await expect(payBtn).toBeEnabled({ timeout: 10000 });
+      await payBtn.click({ force: true });
 
       // 7. Verify
       console.log('Waiting for final result...');
       await expect(async () => {
           // 1. Check for Xendit failure modal first
           for (const frame of [page, ...page.frames()]) {
-              const modal = frame.locator('div').filter({ hasText: /Transaction Failed/i }).first();
+              const modal = frame.locator('div, .modal, .dialog').filter({ hasText: /Transaction Failed|Payment Failed|Declined/i }).first();
               if (await modal.isVisible().catch(() => false)) {
                   const text = await modal.innerText();
                   console.log('Detected Xendit Failure Modal:', text.replace(/\n/g, ' '));
                   
-                  const okBtn = frame.locator('button').filter({ hasText: /OK|Got it/i }).first();
-                  if (await okBtn.isVisible()) {
+                  const okBtn = frame.locator('button').filter({ hasText: /OK|Got it|Close|Dismiss/i }).first();
+                  if (await okBtn.isVisible().catch(() => false)) {
                       await okBtn.click();
                       console.log('Clicked OK on failure modal.');
                       

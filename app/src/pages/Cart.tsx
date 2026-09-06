@@ -38,7 +38,6 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
   const getTriggerAmount = () => {
     if (cart.some(item => item.id === 1059 || item.title?.includes('(59)'))) return 10059;
     if (cart.some(item => item.id === 1054 || item.title?.includes('(54)'))) return 10054;
-    if (cart.some(item => item.id === 1013 || item.title?.includes('(51)'))) return 13051;
     return Math.round(finalTotalNum * 15000);
   };
 
@@ -61,7 +60,6 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
       
       const getFailureReason = () => {
         const last2 = totalAmount % 100;
-        if (last2 === 51) return '51';
         if (last2 === 54) return '54';
         if (last2 === 59) return '59';
         return 'INSUFFICIENT_BALANCE';
@@ -119,18 +117,13 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
       }
       
       const confirmDemo = window.confirm(
-        `Payment Error: ${errorMsg}\n\nWould you like to SIMULATE a successful payment for testing purposes?\n\n(Click Cancel for more simulation options)`
+        `Payment Error: ${errorMsg}\n\nWould you like to SIMULATE a successful payment for testing purposes?\n\n(Click Cancel to simulate a failure)`
       );
 
       if (confirmDemo) {
         simulateSuccess();
       } else {
-        const simulateFailureOpt = window.confirm("Would you like to SIMULATE an 'INSUFFICIENT BALANCE' (Error 51) failure?");
-        if (simulateFailureOpt) {
-          simulateFailure('INSUFFICIENT_BALANCE', '51 - Insufficient Balance');
-        } else {
-          setIsProcessing(false);
-        }
+        simulateFailure('INSUFFICIENT_BALANCE', 'Insufficient Balance');
       }
     }
   };

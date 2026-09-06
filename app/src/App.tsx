@@ -64,7 +64,7 @@ function App() {
         if (isFailure) return { ...o, status: 'cancelled' };
         
         // Special case: if order contains the trigger item, it should NEVER be completed
-        const hasTriggerItem = o.items.some(item => item.title === 'Trigger Failure Item');
+        const hasTriggerItem = o.items.some(item => (item.title || '').includes('Trigger Failure Item'));
         if (hasTriggerItem) {
           // If we landed here without status=failure, Xendit might have mis-redirected
           // We'll force it to cancelled and trigger the error banner
@@ -72,7 +72,7 @@ function App() {
             setPaymentError('Transaction Failed: Your account has insufficient balance. Please use another card or top up your account.');
             // Clean up the URL if it incorrectly says success
             if (window.location.search.includes('status=success')) {
-              window.history.replaceState({}, '', window.location.pathname + '?status=failure&reason=51');
+              window.history.replaceState({}, '', window.location.pathname + '?status=failure&reason=54');
             }
           }, 500);
           return { ...o, status: 'cancelled' };
