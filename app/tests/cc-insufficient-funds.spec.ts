@@ -94,12 +94,12 @@ test.describe('Credit Card Negative Case - Insufficient Balance', () => {
     await page.goto('/');
     await page.evaluate(() => {
       const triggerItem = {
-        id: 1013,
-        title: "Trigger Failure Item",
-        price: 13051 / 15000,
-        description: "Special item for testing insufficient balance failure (Test Mode).",
+        id: 1054,
+        title: "Trigger Failure Item (54)",
+        price: 10054 / 15000,
+        description: "Test Code 54: Insufficient Balance (User defined).",
         category: "jewelery",
-        image: "https://images.unsplash.com/photo-1594539829535-de2adbd3c761?auto=format&fit=crop&q=80&w=800",
+        image: "https://images.unsplash.com/photo-1573408302185-9127b5428fb3?auto=format&fit=crop&q=80&w=800",
         rating: { rate: 1.0, count: 0 }
       };
       localStorage.setItem('cart', JSON.stringify([triggerItem]));
@@ -109,9 +109,9 @@ test.describe('Credit Card Negative Case - Insufficient Balance', () => {
     await page.goto('/cart');
     await page.waitForURL('**/cart');
     
-    // Verify total (13,051 trigger for code 51)
+    // Verify total (10,054 trigger for code 54)
     const totalElement = page.locator('[data-test="cart-total"]');
-    await expect(totalElement).toContainText('13,051');
+    await expect(totalElement).toContainText('10,054');
     await cartPage.checkout();
 
     // 4. Handle Xendit
