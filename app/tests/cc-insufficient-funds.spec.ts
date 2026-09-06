@@ -121,11 +121,30 @@ test.describe('Credit Card Negative Scenarios - Xendit Failures', () => {
       // 7. Verify
       console.log('Waiting for final result...');
       await expect(async () => {
-          const failureBanner = await findFailure(page);
-          if (failureBanner) {
+          // 1. Check for Xendit failure modal first
+          for (const frame of [page, ...page.frames()]) {
+              const modal = frame.locator('div').filter({ hasText: /Transaction Failed/i }).first();
+              if (await modal.isVisible().catch(() => false)) {
+                  const text = await modal.innerText();
+                  console.log('Detected Xendit Failure Modal:', text.replace(/\n/g, ' '));
+                  
+                  const okBtn = frame.locator('button').filter({ hasText: /OK|Got it/i }).first();
+                  if (await okBtn.isVisible()) {
+                      await okBtn.click();
+                      console.log('Clicked OK on failure modal.');
+                  }
+                  break;
+              }
+          }
+
+          // 2. Check for App Failure Banner
+          const failureBanner = page.locator('[data-test="payment-error-banner"]').first();
+          if (await failureBanner.isVisible().catch(() => false)) {
               const text = await failureBanner.innerText();
+              console.log('Found App Failure Banner:', text);
               expect(text.toLowerCase()).toMatch(scenario.term);
           } else {
+              // If we are still on Xendit and found OTP, handle it
               if (page.url().includes('checkout')) {
                   const otpInput = page.locator('input[placeholder*="Code"], input[name*="otp"], #otp').first();
                   if (await otpInput.isVisible().catch(() => false)) {
@@ -133,7 +152,7 @@ test.describe('Credit Card Negative Scenarios - Xendit Failures', () => {
                       await page.keyboard.press('Enter');
                   }
               }
-              throw new Error('Waiting for failure message...');
+              throw new Error('Waiting for app failure banner...');
           }
       }).toPass({ timeout: 60000 });
       console.log(`E2E Negative Test Passed: ${scenario.title} correctly handled.`);
