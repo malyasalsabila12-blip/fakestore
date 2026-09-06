@@ -30,65 +30,57 @@ Ensure you have [Node.js](https://nodejs.org/) installed (v18 or higher recommen
 
 ### Installation
 
-1. Clone the repository and navigate to the project folder:
-   ```bash
-   cd fakestore
-   ```
+1. Clone the repository and navigate to the project folder.
 
-2. Install dependencies for both the application and the QA suite:
+2. Install all dependencies for the app, api, and qa suite using the root script:
    ```bash
-   # Install App dependencies
-   cd app
-   npm install
-   
-   # Install QA dependencies
-   cd ../qa
-   npm install
+   npm run install-all
    ```
 
 3. Install Playwright browsers:
    ```bash
-   cd ../app
+   cd app
    npx playwright install
    ```
 
 ### Running Development Server
 
-Start the local development server for the web app:
+Start both the frontend and backend simultaneously using the root command:
 ```bash
-cd app
 npm run dev
 ```
-The app will be available at `http://localhost:5173` (or the port specified in the console).
+- **Frontend**: `http://localhost:5173`
+- **Backend (API)**: `http://localhost:3001`
 
 ---
 
 ## 🧪 Testing with Playwright
 
-We use Playwright for end-to-end testing to ensure the application works as expected.
+We use Playwright for end-to-end testing, including complex payment flows.
 
-### Running Tests
+### Running Tests Locally
 
-1. To run all tests in headless mode:
+1. To run all tests against the local server:
    ```bash
    cd app
    npx playwright test
    ```
 
-2. To run tests in **UI mode** (Interactive):
-   ```bash
-   npx playwright test --ui
-   ```
+### Running Tests against Production (Vercel)
 
-3. To view the last test report:
-   ```bash
-   npx playwright show-report
-   ```
+To run tests against your live Vercel deployment, set the `BASE_URL`:
+```bash
+# Windows (PowerShell)
+$env:BASE_URL="https://your-app.vercel.app"; npx playwright test --prefix app
 
-### Testing Results Summary
-Our test suite covers:
-- **Positive Scenarios**: Home page loading, search functionality, category filtering, and full checkout flow.
-- **Negative Scenarios**: Proper handling of "not found" states for invalid product IDs and incorrect login credentials.
+# Mac/Linux
+BASE_URL=https://your-app.vercel.app npx playwright test --prefix app
+```
+
+### Key Test Scenarios
+- **Payment Success**: E2E flow for purchasing a "Signature Watch" via Credit Card simulation.
+- **Payment Failure**: Handles "Insufficient Balance" (Error 51) using specialized testing amounts (IDR 13,051).
+- **UI Responsiveness**: Verified across different viewport sizes.
 
 ---
 

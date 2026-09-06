@@ -58,14 +58,18 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
 
     try {
       const orderId = `MAL-${Date.now()}`;
-      // Use relative path - Vite proxy handles this in dev, and Vercel in production
+      // Use the specific trigger code if it's a test item, otherwise use INSUFFICIENT_BALANCE
+      const failureReason = totalAmount === 13051 ? '51' : 
+                            totalAmount === 10054 ? '54' : 
+                            totalAmount === 10059 ? '59' : 'INSUFFICIENT_BALANCE';
+
       const response = await axios.post('/api/checkout', {
         amount: totalAmount,
         payerEmail: user?.email || 'customer@example.com',
         description: `Malstro Order for ${user?.username || 'Guest'}`,
         externalID: orderId,
         successUrl: `${window.location.origin}/cart?status=success`,
-        failureUrl: `${window.location.origin}/cart?status=failure&reason=${totalAmount % 100 === 51 ? '51' : 'INSUFFICIENT_BALANCE'}`,
+        failureUrl: `${window.location.origin}/cart?status=failure&reason=${failureReason}`,
         items: cart.map(item => ({
           id: item.id,
           title: item.title,
