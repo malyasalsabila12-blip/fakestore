@@ -58,10 +58,12 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
 
     try {
       const orderId = `MAL-${Date.now()}`;
-      // Map the specialized totalAmount back to a reason code for the redirect
-      const getReasonCode = () => {
-        const lastTwo = totalAmount % 100;
-        if (lastTwo === 51 || lastTwo === 54 || lastTwo === 59) return lastTwo.toString();
+      
+      const getFailureReason = () => {
+        const last2 = totalAmount % 100;
+        if (last2 === 51) return '51';
+        if (last2 === 54) return '54';
+        if (last2 === 59) return '59';
         return 'INSUFFICIENT_BALANCE';
       };
 
@@ -72,7 +74,7 @@ const Cart: React.FC<CartProps> = ({ cart, removeFromCart, clearCart, user, addO
         description: `Malstro Order for ${user?.username || 'Guest'}`,
         externalID: orderId,
         successUrl: `${window.location.origin}/cart?status=success`,
-        failureUrl: `${window.location.origin}/cart?status=failure&reason=${getReasonCode()}`,
+        failureUrl: `${window.location.origin}/cart?status=failure&reason=${getFailureReason()}`,
         items: cart.map(item => ({
           id: item.id,
           title: item.title,
